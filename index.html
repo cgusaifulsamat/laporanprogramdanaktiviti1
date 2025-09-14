@@ -766,142 +766,140 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Modern elegant colors
-            const primaryColor = [34, 197, 94]; // Emerald green
-            const accentColor = [16, 185, 129]; // Teal
-            const textColor = [30, 41, 59]; // Slate 800
-            const lightBg = [248, 250, 252]; // Slate 50
+            // Clean minimalist colors
+            const primaryColor = [71, 85, 105]; // Slate 600
+            const accentColor = [148, 163, 184]; // Slate 400
+            const textColor = [15, 23, 42]; // Slate 900
+            const lightBg = [241, 245, 249]; // Slate 100
             const grayText = [100, 116, 139]; // Slate 500
 
-            // Elegant gradient header
-            doc.setFillColor(34, 197, 94);
-            doc.rect(0, 0, 210, 45, 'F');
+            // Simple clean header
+            doc.setFillColor(241, 245, 249);
+            doc.rect(0, 0, 210, 35, 'F');
+
+            // Clean title without special characters
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('LAPORAN AKTIVITI', 105, 15, { align: 'center' });
             
-            doc.setFillColor(16, 185, 129);
-            doc.rect(0, 0, 210, 30, 'F');
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Sistem Pengurusan Sekolah & Komuniti', 105, 25, { align: 'center' });
 
-            // Modern title
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24);
-            doc.setFont(undefined, 'bold');
-            doc.text('LAPORAN AKTIVITI', 105, 18, { align: 'center' });
-            
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            doc.text('Sistem Pengurusan Sekolah & Komuniti', 105, 26, { align: 'center' });
+            let yPos = 50;
 
-            let yPos = 60;
-
-            // Program name with modern styling
-            doc.setFillColor(...lightBg);
-            doc.roundedRect(15, yPos - 8, 180, 20, 3, 3, 'F');
-            
-            doc.setTextColor(...textColor);
-            doc.setFontSize(18);
-            doc.setFont(undefined, 'bold');
-            doc.text(report.namaProgram, 20, yPos + 2);
-
-            yPos += 30;
-
-            // Modern card-style details
+            // Program name with clean styling
             doc.setFillColor(255, 255, 255);
-            doc.setDrawColor(226, 232, 240);
+            doc.setDrawColor(203, 213, 225);
             doc.setLineWidth(0.5);
-            doc.roundedRect(15, yPos - 5, 180, 85, 5, 5, 'FD');
+            doc.rect(15, yPos - 5, 180, 18, 'FD');
+            
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(report.namaProgram, 20, yPos + 6);
+
+            yPos += 25;
+
+            // Clean details section
+            doc.setFillColor(255, 255, 255);
+            doc.setDrawColor(203, 213, 225);
+            doc.setLineWidth(0.5);
+            doc.rect(15, yPos - 5, 180, 75, 'FD');
 
             yPos += 5;
 
-            // Details with better spacing and typography
-            doc.setFontSize(11);
+            // Details without emoji characters
+            doc.setFontSize(10);
             const details = [
-                [`📅 Tarikh & Masa`, `${report.hari}, ${report.tarikh} pada ${report.masa}`],
-                [`📍 Tempat`, report.tempat],
-                [`🏢 Penganjur`, report.penganjur],
-                [`🎯 Peringkat`, report.peringkat],
-                [`👥 Jumlah Peserta`, `${report.jumlahPeserta} orang`],
-                [`✍️ Pelapor`, report.namaPelapor]
+                [`Tarikh & Masa`, `${report.hari}, ${report.tarikh} pada ${report.masa}`],
+                [`Tempat`, report.tempat],
+                [`Penganjur`, report.penganjur],
+                [`Peringkat`, report.peringkat],
+                [`Jumlah Peserta`, `${report.jumlahPeserta} orang`],
+                [`Pelapor`, report.namaPelapor]
             ];
 
             details.forEach(([label, value], index) => {
                 const isEven = index % 2 === 0;
                 const xPos = isEven ? 20 : 110;
-                const currentY = yPos + Math.floor(index / 2) * 22;
+                const currentY = yPos + Math.floor(index / 2) * 20;
                 
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(...accentColor);
-                doc.text(label, xPos, currentY);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text(label + ':', xPos, currentY);
                 
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(...textColor);
-                const wrappedText = doc.splitTextToSize(value, 85);
-                doc.text(wrappedText, xPos, currentY + 8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                const wrappedText = doc.splitTextToSize(value, 80);
+                doc.text(wrappedText, xPos, currentY + 7);
             });
 
-            yPos += 85;
+            yPos += 70;
 
-            // Images section with proper async handling
+            // Images section with clean styling
             if (report.gambar && report.gambar.length > 0) {
-                yPos += 15;
+                yPos += 10;
                 
                 // Images header
-                doc.setFillColor(...lightBg);
-                doc.roundedRect(15, yPos - 5, 180, 15, 3, 3, 'F');
+                doc.setFillColor(255, 255, 255);
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.5);
+                doc.rect(15, yPos - 5, 180, 12, 'FD');
                 
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(...accentColor);
-                doc.text('📸 Gambar Aktiviti', 20, yPos + 5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Gambar Aktiviti', 20, yPos + 3);
                 
-                yPos += 20;
+                yPos += 15;
                 
-                // Process images synchronously
-                const imageWidth = 55;
-                const imageHeight = 40;
+                // Process images with clean borders
+                const imageWidth = 50;
+                const imageHeight = 35;
                 const imagesPerRow = 3;
-                const imageSpacing = 8;
+                const imageSpacing = 10;
                 
                 for (let i = 0; i < Math.min(report.gambar.length, 6); i++) {
                     const row = Math.floor(i / imagesPerRow);
                     const col = i % imagesPerRow;
                     const x = 20 + col * (imageWidth + imageSpacing);
-                    const y = yPos + row * (imageHeight + 10);
+                    const y = yPos + row * (imageHeight + 8);
                     
                     try {
-                        // Add image with border
-                        doc.setDrawColor(226, 232, 240);
-                        doc.setLineWidth(1);
-                        doc.roundedRect(x - 1, y - 1, imageWidth + 2, imageHeight + 2, 2, 2, 'D');
+                        // Clean image border
+                        doc.setDrawColor(203, 213, 225);
+                        doc.setLineWidth(0.5);
+                        doc.rect(x - 1, y - 1, imageWidth + 2, imageHeight + 2, 'D');
                         
                         doc.addImage(report.gambar[i], 'JPEG', x, y, imageWidth, imageHeight);
                     } catch (e) {
-                        // Fallback for failed images
+                        // Clean fallback for failed images
                         doc.setFillColor(248, 250, 252);
-                        doc.roundedRect(x, y, imageWidth, imageHeight, 2, 2, 'F');
+                        doc.rect(x, y, imageWidth, imageHeight, 'F');
                         
-                        doc.setTextColor(...grayText);
+                        doc.setTextColor(100, 116, 139);
                         doc.setFontSize(8);
+                        doc.setFont('helvetica', 'normal');
                         doc.text('Gambar tidak', x + imageWidth/2, y + imageHeight/2 - 2, { align: 'center' });
                         doc.text('dapat dipapar', x + imageWidth/2, y + imageHeight/2 + 4, { align: 'center' });
                     }
                 }
                 
-                yPos += Math.ceil(Math.min(report.gambar.length, 6) / imagesPerRow) * (imageHeight + 10) + 10;
+                yPos += Math.ceil(Math.min(report.gambar.length, 6) / imagesPerRow) * (imageHeight + 8) + 10;
             }
 
-            // Modern footer
-            const footerY = 275;
-            doc.setFillColor(...lightBg);
-            doc.rect(0, footerY, 210, 22, 'F');
+            // Clean minimal footer
+            const footerY = 270;
+            doc.setDrawColor(203, 213, 225);
+            doc.setLineWidth(0.5);
+            doc.line(20, footerY, 190, footerY);
             
-            // Footer line
-            doc.setDrawColor(...accentColor);
-            doc.setLineWidth(1);
-            doc.line(20, footerY + 2, 190, footerY + 2);
-            
-            doc.setTextColor(...grayText);
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            doc.text(`Laporan dijana pada ${new Date().toLocaleDateString('ms-MY')} | ${new Date().toLocaleTimeString('ms-MY')}`, 105, footerY + 10, { align: 'center' });
-            doc.text('Sistem Laporan Aktiviti - Sekolah & Komuniti Kampung', 105, footerY + 17, { align: 'center' });
+            doc.setTextColor(100, 116, 139);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Dijana pada: ${new Date().toLocaleDateString('ms-MY')} ${new Date().toLocaleTimeString('ms-MY')}`, 105, footerY + 8, { align: 'center' });
+            doc.text('Sistem Laporan Aktiviti', 105, footerY + 15, { align: 'center' });
 
             // Save PDF with better filename
             const cleanName = report.namaProgram.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
@@ -952,5 +950,5 @@
         displayReports();
         setCurrentDateTime();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef865e533f46c4',t:'MTc1Nzg0OTEzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef8eb943234bc5',t:'MTc1Nzg0OTQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
