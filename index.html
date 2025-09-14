@@ -479,7 +479,184 @@
 
         // Download functionality
         function downloadPDF() {
-            showNotification('Fungsi download akan tersedia tidak lama lagi!', 'info');
+            const laporan = getCurrentReportData();
+            const peringkatMap = {
+                'komuniti': '🏘️ Komuniti',
+                'sekolah': '🏫 Sekolah',
+                'daerah': '🏛️ Daerah',
+                'bahagian': '🏢 Bahagian',
+                'negeri': '🏴 Negeri',
+                'kebangsaan': '🇲🇾 Kebangsaan',
+                'antarabangsa': '🌍 Antarabangsa'
+            };
+
+            // Create a new window for PDF generation
+            const printWindow = window.open('', '_blank');
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Aktiviti - ${laporan.tajuk}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px; 
+                            line-height: 1.6;
+                            color: #333;
+                        }
+                        .header { 
+                            text-align: center; 
+                            border-bottom: 2px solid #333; 
+                            padding-bottom: 20px; 
+                            margin-bottom: 30px;
+                        }
+                        .header h1 { 
+                            margin: 0; 
+                            font-size: 24px; 
+                            font-weight: bold;
+                        }
+                        .section { 
+                            margin-bottom: 20px; 
+                        }
+                        .section h3 { 
+                            font-weight: bold; 
+                            margin-bottom: 5px; 
+                            color: #333;
+                            font-size: 14px;
+                        }
+                        .section p { 
+                            margin: 0; 
+                            padding-left: 10px;
+                            font-size: 13px;
+                        }
+                        .grid { 
+                            display: flex; 
+                            gap: 20px; 
+                            margin-bottom: 20px;
+                        }
+                        .grid-item { 
+                            flex: 1; 
+                        }
+                        .signature-section { 
+                            border-top: 1px solid #ccc; 
+                            padding-top: 30px; 
+                            margin-top: 40px;
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .signature-box {
+                            text-align: center;
+                        }
+                        .signature-line {
+                            border-bottom: 1px solid #333;
+                            width: 200px;
+                            margin: 60px auto 10px auto;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>LAPORAN AKTIVITI</h1>
+                    </div>
+
+                    <div class="grid">
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Tajuk Aktiviti:</h3>
+                                <p>${laporan.tajuk || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Penganjur:</h3>
+                                <p>${laporan.penganjur || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${laporan.peringkat ? `
+                    <div class="section">
+                        <h3>Peringkat:</h3>
+                        <p>${peringkatMap[laporan.peringkat] || laporan.peringkat}</p>
+                    </div>
+                    ` : ''}
+
+                    <div class="grid">
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Tarikh:</h3>
+                                <p>${laporan.tarikh || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Hari:</h3>
+                                <p>${laporan.hari || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Masa:</h3>
+                                <p>${laporan.masa || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Lokasi:</h3>
+                                <p>${laporan.lokasi || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>Bilangan Peserta:</h3>
+                        <p>${laporan.bilanganPeserta || '0'} orang</p>
+                    </div>
+
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <p style="font-size: 12px; margin-bottom: 5px;">Disediakan oleh:</p>
+                            <div class="signature-line"></div>
+                            <p style="font-size: 12px; margin-top: 5px;">${laporan.pelapor || '_________________'}</p>
+                            <p style="font-size: 10px; color: #666;">Nama & Tandatangan</p>
+                        </div>
+                        <div class="signature-box">
+                            <p style="font-size: 12px; margin-bottom: 5px;">Tarikh:</p>
+                            <div class="signature-line"></div>
+                            <p style="font-size: 12px; margin-top: 5px;">${laporan.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}</p>
+                        </div>
+                    </div>
+
+                    <div class="no-print" style="margin-top: 30px; text-align: center; padding: 20px; background: #f0f0f0; border-radius: 10px;">
+                        <p style="margin-bottom: 15px; font-weight: bold;">Untuk download sebagai PDF:</p>
+                        <p style="margin-bottom: 15px; font-size: 14px;">1. Klik butang "Print/Save as PDF" di bawah</p>
+                        <p style="margin-bottom: 15px; font-size: 14px;">2. Pilih "Save as PDF" atau "Microsoft Print to PDF"</p>
+                        <p style="margin-bottom: 15px; font-size: 14px;">3. Pilih lokasi untuk simpan fail PDF</p>
+                        <p style="margin-bottom: 20px; font-size: 14px;">4. Klik "Save" untuk download</p>
+                        <button onclick="window.print()" style="background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-right: 10px;">📥 Print/Save as PDF</button>
+                        <button onclick="window.close()" style="background: #f44336; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">❌ Tutup</button>
+                    </div>
+
+                    <script>
+                        // Auto-trigger print dialog after page loads
+                        window.onload = function() {
+                            setTimeout(function() {
+                                window.print();
+                            }, 500);
+                        };
+                    </script>
+                <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef3dd59548b91f',t:'MTc1Nzg0NjE2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            showNotification('Tetingkap download PDF telah dibuka! Pilih "Save as PDF" untuk download.', 'success');
         }
 
         // Social sharing functions
@@ -854,5 +1031,5 @@ Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
         paparkanSenaraiLaporan();
         autoFillDateTime();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef387721692441',t:'MTc1Nzg0NTk0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
