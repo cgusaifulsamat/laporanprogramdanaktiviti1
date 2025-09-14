@@ -58,16 +58,7 @@
                 <h2 class="text-xl font-semibold mb-6 text-gray-800 mobile-title">Buat Laporan Baru</h2>
                 
                 <form id="laporanForm" class="space-y-6">
-                    <!-- Jenis Laporan -->
-                    <div>
-                        <label class="block text-sm md:text-sm font-medium text-gray-700 mb-2 mobile-text">Jenis Laporan</label>
-                        <select id="jenisLaporan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-select">
-                            <option value="">Pilih jenis laporan...</option>
-                            <option value="aktiviti-sekolah">🏫 Aktiviti Sekolah</option>
-                            <option value="program-sekolah">📚 Program Sekolah</option>
-                            <option value="program-kemasyarakatan">🏘️ Program Kemasyarakatan</option>
-                        </select>
-                    </div>
+
 
                     <!-- Tajuk Aktiviti -->
                     <div>
@@ -164,14 +155,7 @@
             <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-semibold text-gray-800 mobile-title">Senarai Laporan</h2>
-                    <div class="flex space-x-2">
-                        <select id="filterJenis" onchange="filterLaporan()" class="p-2 border border-gray-300 rounded-lg text-sm mobile-select">
-                            <option value="">Semua Jenis</option>
-                            <option value="aktiviti-sekolah">Aktiviti Sekolah</option>
-                            <option value="program-sekolah">Program Sekolah</option>
-                            <option value="program-kemasyarakatan">Program Kemasyarakatan</option>
-                        </select>
-                    </div>
+
                 </div>
                 
                 <div id="senarai-laporan" class="space-y-4">
@@ -280,7 +264,6 @@
             
             const formData = {
                 id: Date.now(),
-                jenis: document.getElementById('jenisLaporan').value,
                 tajuk: document.getElementById('tajukAktiviti').value,
                 tarikh: document.getElementById('tarikhAktiviti').value,
                 masa: document.getElementById('masaAktiviti').value,
@@ -295,7 +278,7 @@
             };
 
             // Validation
-            if (!formData.jenis || !formData.tajuk || !formData.tarikh || !formData.pelapor) {
+            if (!formData.tajuk || !formData.tarikh || !formData.pelapor) {
                 showNotification('Sila lengkapkan maklumat yang diperlukan!', 'error');
                 return;
             }
@@ -324,17 +307,11 @@
                 return;
             }
 
-            const jenisIcons = {
-                'aktiviti-sekolah': '🏫',
-                'program-sekolah': '📚',
-                'program-kemasyarakatan': '🏘️'
-            };
-
             container.innerHTML = laporanData.map(laporan => `
                 <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all">
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex items-center space-x-3">
-                            <span class="text-2xl">${jenisIcons[laporan.jenis] || '📄'}</span>
+                            <span class="text-2xl">📋</span>
                             <div>
                                 <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
                                 <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
@@ -359,61 +336,11 @@
             `).join('');
         }
 
-        // Filter reports
-        function filterLaporan() {
-            const filter = document.getElementById('filterJenis').value;
-            const filteredData = filter ? laporanData.filter(laporan => laporan.jenis === filter) : laporanData;
-            
-            const container = document.getElementById('senarai-laporan');
-            const jenisIcons = {
-                'aktiviti-sekolah': '🏫',
-                'program-sekolah': '📚',
-                'program-kemasyarakatan': '🏘️'
-            };
 
-            if (filteredData.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <div class="text-4xl mb-2">🔍</div>
-                        <p>Tiada laporan dijumpai untuk kategori ini</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filteredData.map(laporan => `
-                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-2xl">${jenisIcons[laporan.jenis] || '📄'}</span>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
-                                <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
-                                ${laporan.peringkat ? `<p class="text-xs text-blue-600">Peringkat: ${laporan.peringkat}</p>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="lihatLaporan(${laporan.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                👁️ Lihat
-                            </button>
-                            <button onclick="downloadLaporan(${laporan.id})" class="text-green-600 hover:text-green-800 text-sm font-medium">
-                                📥 Download
-                            </button>
-                            <button onclick="padamLaporan(${laporan.id})" class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                🗑️ Padam
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-2">Penganjur: ${laporan.penganjur}</p>
-                    <p class="text-sm text-gray-600">Peserta: ${laporan.bilanganPeserta || 'Tidak dinyatakan'} orang</p>
-                </div>
-            `).join('');
-        }
 
         // Preview functionality
         function previewLaporan() {
             const formData = {
-                jenis: document.getElementById('jenisLaporan').value,
                 tajuk: document.getElementById('tajukAktiviti').value,
                 tarikh: document.getElementById('tarikhAktiviti').value,
                 masa: document.getElementById('masaAktiviti').value,
@@ -444,12 +371,6 @@
         }
 
         function generatePreview(data) {
-            const jenisMap = {
-                'aktiviti-sekolah': '🏫 Aktiviti Sekolah',
-                'program-sekolah': '📚 Program Sekolah',
-                'program-kemasyarakatan': '🏘️ Program Kemasyarakatan'
-            };
-
             const peringkatMap = {
                 'komuniti': '🏘️ Komuniti',
                 'sekolah': '🏫 Sekolah',
@@ -464,7 +385,6 @@
                 <div class="max-w-4xl mx-auto bg-white">
                     <div class="text-center mb-8 border-b pb-6">
                         <h1 class="text-2xl font-bold mb-2">LAPORAN AKTIVITI</h1>
-                        <p class="text-lg text-gray-600">${jenisMap[data.jenis] || data.jenis}</p>
                     </div>
 
                     <div class="space-y-6">
@@ -578,12 +498,6 @@
             const printWindow = window.open('', '_blank');
             
             const laporan = getCurrentReportData();
-            const jenisMap = {
-                'aktiviti-sekolah': '🏫 Aktiviti Sekolah',
-                'program-sekolah': '📚 Program Sekolah',
-                'program-kemasyarakatan': '🏘️ Program Kemasyarakatan'
-            };
-
             const peringkatMap = {
                 'komuniti': '🏘️ Komuniti',
                 'sekolah': '🏫 Sekolah',
@@ -617,11 +531,6 @@
                             margin: 0; 
                             font-size: 24px; 
                             font-weight: bold;
-                        }
-                        .header p { 
-                            margin: 10px 0 0 0; 
-                            font-size: 18px; 
-                            color: #666;
                         }
                         .section { 
                             margin-bottom: 20px; 
@@ -669,7 +578,6 @@
                 <body>
                     <div class="header">
                         <h1>LAPORAN AKTIVITI</h1>
-                        <p>${jenisMap[laporan.jenis] || laporan.jenis}</p>
                     </div>
 
                     <div class="grid">
@@ -763,7 +671,6 @@
         function getCurrentReportData() {
             // Try to get data from form first (if in preview mode)
             const formData = {
-                jenis: document.getElementById('jenisLaporan').value,
                 tajuk: document.getElementById('tajukAktiviti').value,
                 tarikh: document.getElementById('tarikhAktiviti').value,
                 masa: document.getElementById('masaAktiviti').value,
@@ -845,12 +752,6 @@ _Laporan lengkap telah disediakan menggunakan Sistem Laporan Aktiviti_
         }
 
         function generateTextReport(data) {
-            const jenisMap = {
-                'aktiviti-sekolah': 'Aktiviti Sekolah',
-                'program-sekolah': 'Program Sekolah',
-                'program-kemasyarakatan': 'Program Kemasyarakatan'
-            };
-
             const peringkatMap = {
                 'komuniti': 'Komuniti',
                 'sekolah': 'Sekolah',
@@ -863,7 +764,6 @@ _Laporan lengkap telah disediakan menggunakan Sistem Laporan Aktiviti_
 
             return `
 LAPORAN AKTIVITI
-${jenisMap[data.jenis] || data.jenis}
 =====================================
 
 Tajuk Aktiviti: ${data.tajuk || '-'}
@@ -954,5 +854,5 @@ Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
         paparkanSenaraiLaporan();
         autoFillDateTime();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef2e0b0759a72d',t:'MTc1Nzg0NTUyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef387721692441',t:'MTc1Nzg0NTk0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
