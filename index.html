@@ -48,10 +48,7 @@
                     <span class="hidden sm:inline">📄 Senarai Laporan</span>
                     <span class="sm:hidden">📄 Senarai</span>
                 </button>
-                <button onclick="showTab('template')" id="tab-template" class="flex-1 py-3 px-2 md:px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100 mobile-button">
-                    <span class="hidden sm:inline">📝 Template</span>
-                    <span class="sm:hidden">📝 Template</span>
-                </button>
+
             </div>
         </div>
 
@@ -66,10 +63,9 @@
                         <label class="block text-sm md:text-sm font-medium text-gray-700 mb-2 mobile-text">Jenis Laporan</label>
                         <select id="jenisLaporan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-select">
                             <option value="">Pilih jenis laporan...</option>
-                            <option value="sekolah">🏫 Aktiviti Sekolah</option>
-                            <option value="komuniti">🏘️ Aktiviti Komuniti</option>
-                            <option value="gotong-royong">🤝 Gotong-royong</option>
-                            <option value="program">🎯 Program Khusus</option>
+                            <option value="aktiviti-sekolah">🏫 Aktiviti Sekolah</option>
+                            <option value="program-sekolah">📚 Program Sekolah</option>
+                            <option value="program-kemasyarakatan">🏘️ Program Kemasyarakatan</option>
                         </select>
                     </div>
 
@@ -79,8 +75,8 @@
                         <input type="text" id="tajukAktiviti" placeholder="Contoh: Hari Sukan Sekolah 2024" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                     </div>
 
-                    <!-- Tarikh & Masa -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Tarikh, Masa & Hari -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Tarikh</label>
                             <input type="date" id="tarikhAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
@@ -88,6 +84,10 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Masa</label>
                             <input type="time" id="masaAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Hari</label>
+                            <input type="text" id="hariAktiviti" readonly class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 mobile-input">
                         </div>
                     </div>
 
@@ -103,45 +103,42 @@
                         <input type="text" id="penganjur" placeholder="Contoh: PIBG Sekolah / JKKK Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                     </div>
 
-                    <!-- Objektif -->
+                    <!-- Peringkat -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Objektif Aktiviti</label>
-                        <textarea id="objektifAktiviti" rows="3" placeholder="Nyatakan objektif atau tujuan aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
-                    </div>
-
-                    <!-- Penerangan Aktiviti -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Penerangan Aktiviti</label>
-                        <textarea id="peneranganAktiviti" rows="4" placeholder="Terangkan aktiviti yang dijalankan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Peringkat</label>
+                        <select id="peringkat" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-select">
+                            <option value="">Pilih peringkat...</option>
+                            <option value="komuniti">🏘️ Komuniti</option>
+                            <option value="sekolah">🏫 Sekolah</option>
+                            <option value="daerah">🏛️ Daerah</option>
+                            <option value="bahagian">🏢 Bahagian</option>
+                            <option value="negeri">🏴 Negeri</option>
+                            <option value="kebangsaan">🇲🇾 Kebangsaan</option>
+                            <option value="antarabangsa">🌍 Antarabangsa</option>
+                        </select>
                     </div>
 
                     <!-- Bilangan Peserta -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Bilangan Peserta</label>
-                            <input type="number" id="bilanganPeserta" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Lelaki</label>
-                            <input type="number" id="bilanganLelaki" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Perempuan</label>
-                            <input type="number" id="bilanganPerempuan" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Bilangan Peserta</label>
+                        <input type="number" id="bilanganPeserta" placeholder="Contoh: 50" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
+                    </div>
+
+                    <!-- Upload Gambar -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Upload Gambar Aktiviti</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                            <input type="file" id="gambarAktiviti" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
+                            <div id="uploadArea" onclick="document.getElementById('gambarAktiviti').click()" class="cursor-pointer">
+                                <div class="text-4xl mb-2">📷</div>
+                                <p class="text-gray-600 mb-2 mobile-text">Klik untuk pilih gambar</p>
+                                <p class="text-sm text-gray-500">Boleh pilih beberapa gambar sekaligus</p>
+                            </div>
+                            <div id="previewImages" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 hidden"></div>
                         </div>
                     </div>
 
-                    <!-- Hasil & Pencapaian -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Hasil & Pencapaian</label>
-                        <textarea id="hasilPencapaian" rows="3" placeholder="Nyatakan hasil dan pencapaian aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
-                    </div>
 
-                    <!-- Masalah & Cadangan -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Masalah & Cadangan Penambahbaikan</label>
-                        <textarea id="masalahCadangan" rows="3" placeholder="Nyatakan masalah yang dihadapi dan cadangan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
-                    </div>
 
                     <!-- Nama Pelapor -->
                     <div>
@@ -170,10 +167,9 @@
                     <div class="flex space-x-2">
                         <select id="filterJenis" onchange="filterLaporan()" class="p-2 border border-gray-300 rounded-lg text-sm mobile-select">
                             <option value="">Semua Jenis</option>
-                            <option value="sekolah">Sekolah</option>
-                            <option value="komuniti">Komuniti</option>
-                            <option value="gotong-royong">Gotong-royong</option>
-                            <option value="program">Program</option>
+                            <option value="aktiviti-sekolah">Aktiviti Sekolah</option>
+                            <option value="program-sekolah">Program Sekolah</option>
+                            <option value="program-kemasyarakatan">Program Kemasyarakatan</option>
                         </select>
                     </div>
                 </div>
@@ -188,38 +184,7 @@
             </div>
         </div>
 
-        <!-- Template Tab -->
-        <div id="content-template" class="tab-content hidden">
-            <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
-                <h2 class="text-xl font-semibold mb-6 text-gray-800 mobile-title">Template Laporan</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('sekolah')">
-                        <div class="text-2xl mb-2">🏫</div>
-                        <h3 class="font-semibold mb-2">Template Sekolah</h3>
-                        <p class="text-sm text-gray-600">Untuk aktiviti sekolah, hari sukan, majlis graduasi, dll.</p>
-                    </div>
-                    
-                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('komuniti')">
-                        <div class="text-2xl mb-2">🏘️</div>
-                        <h3 class="font-semibold mb-2">Template Komuniti</h3>
-                        <p class="text-sm text-gray-600">Untuk aktiviti kampung, kenduri, program komuniti.</p>
-                    </div>
-                    
-                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('gotong-royong')">
-                        <div class="text-2xl mb-2">🤝</div>
-                        <h3 class="font-semibold mb-2">Template Gotong-royong</h3>
-                        <p class="text-sm text-gray-600">Untuk aktiviti gotong-royong, kerja-kerja kebersihan.</p>
-                    </div>
-                    
-                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('program')">
-                        <div class="text-2xl mb-2">🎯</div>
-                        <h3 class="font-semibold mb-2">Template Program Khusus</h3>
-                        <p class="text-sm text-gray-600">Untuk program khas, ceramah, kursus, dll.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Preview Modal -->
@@ -274,44 +239,40 @@
             }
         }
 
-        // Template functionality
-        function gunaTemplate(jenis) {
-            const templates = {
-                sekolah: {
-                    penganjur: 'PIBG Sekolah',
-                    objektif: 'Meningkatkan semangat kerjasama dan kesihatan pelajar melalui aktiviti sukan',
-                    lokasi: 'Padang Sekolah'
-                },
-                komuniti: {
-                    penganjur: 'JKKK Kampung',
-                    objektif: 'Memupuk semangat perpaduan dan kerjasama dalam kalangan penduduk kampung',
-                    lokasi: 'Balai Raya Kampung'
-                },
-                'gotong-royong': {
-                    penganjur: 'JKKK Kampung',
-                    objektif: 'Membersihkan kawasan kampung dan memupuk semangat gotong-royong',
-                    lokasi: 'Kawasan Kampung'
-                },
-                program: {
-                    penganjur: 'Jabatan Kemajuan Masyarakat',
-                    objektif: 'Meningkatkan pengetahuan dan kemahiran masyarakat',
-                    lokasi: 'Dewan Komuniti'
-                }
-            };
+        // Auto-fill date, time and day functionality
+        function autoFillDateTime() {
+            const now = new Date();
+            
+            // Set current date
+            const today = now.toISOString().split('T')[0];
+            document.getElementById('tarikhAktiviti').value = today;
+            
+            // Set current time (rounded to nearest 15 minutes)
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const roundedMinute = Math.round(currentMinute / 15) * 15;
+            const timeString = `${currentHour.toString().padStart(2, '0')}:${roundedMinute.toString().padStart(2, '0')}`;
+            document.getElementById('masaAktiviti').value = timeString;
+            
+            // Set day name in Malay
+            updateDayName();
+        }
 
-            const template = templates[jenis];
-            if (template) {
-                document.getElementById('jenisLaporan').value = jenis;
-                document.getElementById('penganjur').value = template.penganjur;
-                document.getElementById('objektifAktiviti').value = template.objektif;
-                document.getElementById('lokasiAktiviti').value = template.lokasi;
-                
-                showTab('buat');
-                
-                // Show success message
-                showNotification('Template berjaya dimuatkan!', 'success');
+        function updateDayName() {
+            const dateInput = document.getElementById('tarikhAktiviti');
+            const dayInput = document.getElementById('hariAktiviti');
+            
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+                dayInput.value = days[date.getDay()];
+            } else {
+                dayInput.value = '';
             }
         }
+
+        // Add event listener for date change
+        document.getElementById('tarikhAktiviti').addEventListener('change', updateDayName);
 
         // Form submission
         document.getElementById('laporanForm').addEventListener('submit', function(e) {
@@ -323,16 +284,13 @@
                 tajuk: document.getElementById('tajukAktiviti').value,
                 tarikh: document.getElementById('tarikhAktiviti').value,
                 masa: document.getElementById('masaAktiviti').value,
+                hari: document.getElementById('hariAktiviti').value,
                 lokasi: document.getElementById('lokasiAktiviti').value,
                 penganjur: document.getElementById('penganjur').value,
-                objektif: document.getElementById('objektifAktiviti').value,
-                penerangan: document.getElementById('peneranganAktiviti').value,
+                peringkat: document.getElementById('peringkat').value,
                 bilanganPeserta: document.getElementById('bilanganPeserta').value,
-                bilanganLelaki: document.getElementById('bilanganLelaki').value,
-                bilanganPerempuan: document.getElementById('bilanganPerempuan').value,
-                hasil: document.getElementById('hasilPencapaian').value,
-                masalah: document.getElementById('masalahCadangan').value,
                 pelapor: document.getElementById('namaPelapor').value,
+                gambar: uploadedImages,
                 tarikhDibuat: new Date().toLocaleDateString('ms-MY')
             };
 
@@ -347,6 +305,8 @@
             
             showNotification('Laporan berjaya disimpan!', 'success');
             document.getElementById('laporanForm').reset();
+            uploadedImages = [];
+            displayImagePreviews();
         });
 
         // Display reports list
@@ -365,10 +325,9 @@
             }
 
             const jenisIcons = {
-                sekolah: '🏫',
-                komuniti: '🏘️',
-                'gotong-royong': '🤝',
-                program: '🎯'
+                'aktiviti-sekolah': '🏫',
+                'program-sekolah': '📚',
+                'program-kemasyarakatan': '🏘️'
             };
 
             container.innerHTML = laporanData.map(laporan => `
@@ -379,6 +338,7 @@
                             <div>
                                 <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
                                 <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
+                                ${laporan.peringkat ? `<p class="text-xs text-blue-600">Peringkat: ${laporan.peringkat}</p>` : ''}
                             </div>
                         </div>
                         <div class="flex space-x-2">
@@ -406,10 +366,9 @@
             
             const container = document.getElementById('senarai-laporan');
             const jenisIcons = {
-                sekolah: '🏫',
-                komuniti: '🏘️',
-                'gotong-royong': '🤝',
-                program: '🎯'
+                'aktiviti-sekolah': '🏫',
+                'program-sekolah': '📚',
+                'program-kemasyarakatan': '🏘️'
             };
 
             if (filteredData.length === 0) {
@@ -430,6 +389,7 @@
                             <div>
                                 <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
                                 <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
+                                ${laporan.peringkat ? `<p class="text-xs text-blue-600">Peringkat: ${laporan.peringkat}</p>` : ''}
                             </div>
                         </div>
                         <div class="flex space-x-2">
@@ -457,16 +417,13 @@
                 tajuk: document.getElementById('tajukAktiviti').value,
                 tarikh: document.getElementById('tarikhAktiviti').value,
                 masa: document.getElementById('masaAktiviti').value,
+                hari: document.getElementById('hariAktiviti').value,
                 lokasi: document.getElementById('lokasiAktiviti').value,
                 penganjur: document.getElementById('penganjur').value,
-                objektif: document.getElementById('objektifAktiviti').value,
-                penerangan: document.getElementById('peneranganAktiviti').value,
+                peringkat: document.getElementById('peringkat').value,
                 bilanganPeserta: document.getElementById('bilanganPeserta').value,
-                bilanganLelaki: document.getElementById('bilanganLelaki').value,
-                bilanganPerempuan: document.getElementById('bilanganPerempuan').value,
-                hasil: document.getElementById('hasilPencapaian').value,
-                masalah: document.getElementById('masalahCadangan').value,
-                pelapor: document.getElementById('namaPelapor').value
+                pelapor: document.getElementById('namaPelapor').value,
+                gambar: uploadedImages
             };
 
             if (!formData.tajuk) {
@@ -488,10 +445,19 @@
 
         function generatePreview(data) {
             const jenisMap = {
-                sekolah: '🏫 Aktiviti Sekolah',
-                komuniti: '🏘️ Aktiviti Komuniti',
-                'gotong-royong': '🤝 Gotong-royong',
-                program: '🎯 Program Khusus'
+                'aktiviti-sekolah': '🏫 Aktiviti Sekolah',
+                'program-sekolah': '📚 Program Sekolah',
+                'program-kemasyarakatan': '🏘️ Program Kemasyarakatan'
+            };
+
+            const peringkatMap = {
+                'komuniti': '🏘️ Komuniti',
+                'sekolah': '🏫 Sekolah',
+                'daerah': '🏛️ Daerah',
+                'bahagian': '🏢 Bahagian',
+                'negeri': '🏴 Negeri',
+                'kebangsaan': '🇲🇾 Kebangsaan',
+                'antarabangsa': '🌍 Antarabangsa'
             };
 
             document.getElementById('previewContent').innerHTML = `
@@ -513,10 +479,21 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${data.peringkat ? `
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Peringkat:</h3>
+                            <p class="text-gray-600">${peringkatMap[data.peringkat] || data.peringkat}</p>
+                        </div>
+                        ` : ''}
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                             <div>
                                 <h3 class="font-semibold text-gray-800 mb-2">Tarikh:</h3>
                                 <p class="text-gray-600">${data.tarikh || '-'}</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Hari:</h3>
+                                <p class="text-gray-600">${data.hari || '-'}</p>
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-800 mb-2">Masa:</h3>
@@ -529,39 +506,24 @@
                         </div>
 
                         <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Objektif Aktiviti:</h3>
-                            <p class="text-gray-600">${data.objektif || '-'}</p>
+                            <h3 class="font-semibold text-gray-800 mb-2">Bilangan Peserta:</h3>
+                            <p class="text-gray-600">${data.bilanganPeserta || '0'} orang</p>
                         </div>
 
+                        ${data.gambar && data.gambar.length > 0 ? `
                         <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Penerangan Aktiviti:</h3>
-                            <p class="text-gray-600 whitespace-pre-line">${data.penerangan || '-'}</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Jumlah Peserta:</h3>
-                                <p class="text-gray-600">${data.bilanganPeserta || '0'} orang</p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Lelaki:</h3>
-                                <p class="text-gray-600">${data.bilanganLelaki || '0'} orang</p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Perempuan:</h3>
-                                <p class="text-gray-600">${data.bilanganPerempuan || '0'} orang</p>
+                            <h3 class="font-semibold text-gray-800 mb-2">Gambar Aktiviti:</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                ${data.gambar.map(img => `
+                                    <div class="border rounded-lg overflow-hidden">
+                                        <img src="${img}" alt="Gambar aktiviti" class="w-full h-32 object-cover">
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
+                        ` : ''}
 
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Hasil & Pencapaian:</h3>
-                            <p class="text-gray-600 whitespace-pre-line">${data.hasil || '-'}</p>
-                        </div>
 
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Masalah & Cadangan Penambahbaikan:</h3>
-                            <p class="text-gray-600 whitespace-pre-line">${data.masalah || '-'}</p>
-                        </div>
 
                         <div class="border-t pt-6 mt-8">
                             <div class="flex justify-between items-end">
@@ -617,10 +579,19 @@
             
             const laporan = getCurrentReportData();
             const jenisMap = {
-                sekolah: '🏫 Aktiviti Sekolah',
-                komuniti: '🏘️ Aktiviti Komuniti',
-                'gotong-royong': '🤝 Gotong-royong',
-                program: '🎯 Program Khusus'
+                'aktiviti-sekolah': '🏫 Aktiviti Sekolah',
+                'program-sekolah': '📚 Program Sekolah',
+                'program-kemasyarakatan': '🏘️ Program Kemasyarakatan'
+            };
+
+            const peringkatMap = {
+                'komuniti': '🏘️ Komuniti',
+                'sekolah': '🏫 Sekolah',
+                'daerah': '🏛️ Daerah',
+                'bahagian': '🏢 Bahagian',
+                'negeri': '🏴 Negeri',
+                'kebangsaan': '🇲🇾 Kebangsaan',
+                'antarabangsa': '🌍 Antarabangsa'
             };
 
             printWindow.document.write(`
@@ -716,11 +687,24 @@
                         </div>
                     </div>
 
+                    ${laporan.peringkat ? `
+                    <div class="section">
+                        <h3>Peringkat:</h3>
+                        <p>${peringkatMap[laporan.peringkat] || laporan.peringkat}</p>
+                    </div>
+                    ` : ''}
+
                     <div class="grid">
                         <div class="grid-item">
                             <div class="section">
                                 <h3>Tarikh:</h3>
                                 <p>${laporan.tarikh || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Hari:</h3>
+                                <p>${laporan.hari || '-'}</p>
                             </div>
                         </div>
                         <div class="grid-item">
@@ -738,44 +722,8 @@
                     </div>
 
                     <div class="section">
-                        <h3>Objektif Aktiviti:</h3>
-                        <p>${laporan.objektif || '-'}</p>
-                    </div>
-
-                    <div class="section">
-                        <h3>Penerangan Aktiviti:</h3>
-                        <p style="white-space: pre-line;">${laporan.penerangan || '-'}</p>
-                    </div>
-
-                    <div class="grid">
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Jumlah Peserta:</h3>
-                                <p>${laporan.bilanganPeserta || '0'} orang</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Lelaki:</h3>
-                                <p>${laporan.bilanganLelaki || '0'} orang</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Perempuan:</h3>
-                                <p>${laporan.bilanganPerempuan || '0'} orang</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h3>Hasil & Pencapaian:</h3>
-                        <p style="white-space: pre-line;">${laporan.hasil || '-'}</p>
-                    </div>
-
-                    <div class="section">
-                        <h3>Masalah & Cadangan Penambahbaikan:</h3>
-                        <p style="white-space: pre-line;">${laporan.masalah || '-'}</p>
+                        <h3>Bilangan Peserta:</h3>
+                        <p>${laporan.bilanganPeserta || '0'} orang</p>
                     </div>
 
                     <div class="signature-section">
@@ -819,15 +767,11 @@
                 tajuk: document.getElementById('tajukAktiviti').value,
                 tarikh: document.getElementById('tarikhAktiviti').value,
                 masa: document.getElementById('masaAktiviti').value,
+                hari: document.getElementById('hariAktiviti').value,
                 lokasi: document.getElementById('lokasiAktiviti').value,
                 penganjur: document.getElementById('penganjur').value,
-                objektif: document.getElementById('objektifAktiviti').value,
-                penerangan: document.getElementById('peneranganAktiviti').value,
+                peringkat: document.getElementById('peringkat').value,
                 bilanganPeserta: document.getElementById('bilanganPeserta').value,
-                bilanganLelaki: document.getElementById('bilanganLelaki').value,
-                bilanganPerempuan: document.getElementById('bilanganPerempuan').value,
-                hasil: document.getElementById('hasilPencapaian').value,
-                masalah: document.getElementById('masalahCadangan').value,
                 pelapor: document.getElementById('namaPelapor').value,
                 tarikhDibuat: new Date().toLocaleDateString('ms-MY')
             };
@@ -902,10 +846,19 @@ _Laporan lengkap telah disediakan menggunakan Sistem Laporan Aktiviti_
 
         function generateTextReport(data) {
             const jenisMap = {
-                sekolah: 'Aktiviti Sekolah',
-                komuniti: 'Aktiviti Komuniti',
-                'gotong-royong': 'Gotong-royong',
-                program: 'Program Khusus'
+                'aktiviti-sekolah': 'Aktiviti Sekolah',
+                'program-sekolah': 'Program Sekolah',
+                'program-kemasyarakatan': 'Program Kemasyarakatan'
+            };
+
+            const peringkatMap = {
+                'komuniti': 'Komuniti',
+                'sekolah': 'Sekolah',
+                'daerah': 'Daerah',
+                'bahagian': 'Bahagian',
+                'negeri': 'Negeri',
+                'kebangsaan': 'Kebangsaan',
+                'antarabangsa': 'Antarabangsa'
             };
 
             return `
@@ -915,26 +868,14 @@ ${jenisMap[data.jenis] || data.jenis}
 
 Tajuk Aktiviti: ${data.tajuk || '-'}
 Penganjur: ${data.penganjur || '-'}
+${data.peringkat ? `Peringkat: ${peringkatMap[data.peringkat] || data.peringkat}` : ''}
 Tarikh: ${data.tarikh || '-'}
+Hari: ${data.hari || '-'}
 Masa: ${data.masa || '-'}
 Lokasi: ${data.lokasi || '-'}
 
-OBJEKTIF AKTIVITI:
-${data.objektif || '-'}
-
-PENERANGAN AKTIVITI:
-${data.penerangan || '-'}
-
 BILANGAN PESERTA:
-- Jumlah: ${data.bilanganPeserta || '0'} orang
-- Lelaki: ${data.bilanganLelaki || '0'} orang
-- Perempuan: ${data.bilanganPerempuan || '0'} orang
-
-HASIL & PENCAPAIAN:
-${data.hasil || '-'}
-
-MASALAH & CADANGAN PENAMBAHBAIKAN:
-${data.masalah || '-'}
+${data.bilanganPeserta || '0'} orang
 
 Disediakan oleh: ${data.pelapor || '-'}
 Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
@@ -967,18 +908,51 @@ Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
             }, 3000);
         }
 
-        // Auto-calculate total participants
-        document.getElementById('bilanganLelaki').addEventListener('input', updateTotal);
-        document.getElementById('bilanganPerempuan').addEventListener('input', updateTotal);
+        // Image upload functionality
+        let uploadedImages = [];
 
-        function updateTotal() {
-            const lelaki = parseInt(document.getElementById('bilanganLelaki').value) || 0;
-            const perempuan = parseInt(document.getElementById('bilanganPerempuan').value) || 0;
-            document.getElementById('bilanganPeserta').value = lelaki + perempuan;
+        function handleImageUpload(event) {
+            const files = Array.from(event.target.files);
+            const previewContainer = document.getElementById('previewImages');
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImages.push(e.target.result);
+                        displayImagePreviews();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function displayImagePreviews() {
+            const previewContainer = document.getElementById('previewImages');
+            
+            if (uploadedImages.length > 0) {
+                previewContainer.classList.remove('hidden');
+                previewContainer.innerHTML = uploadedImages.map((img, index) => `
+                    <div class="relative border rounded-lg overflow-hidden">
+                        <img src="${img}" alt="Preview ${index + 1}" class="w-full h-24 object-cover">
+                        <button onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                            ×
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                previewContainer.classList.add('hidden');
+            }
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            displayImagePreviews();
         }
 
         // Initialize
         paparkanSenaraiLaporan();
+        autoFillDateTime();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ee6ed345519fe5',t:'MTc1NzgzNzY4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef2e0b0759a72d',t:'MTc1Nzg0NTUyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
