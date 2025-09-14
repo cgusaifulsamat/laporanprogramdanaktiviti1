@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Aktiviti - Sekolah & Komuniti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-primary:hover { background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <div class="gradient-bg text-white p-6 shadow-lg">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-2xl font-bold mb-2">📋 Laporan Aktiviti</h1>
+            <p class="text-blue-100">Sistem mudah untuk laporan sekolah & komuniti</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto p-6">
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg card-shadow mb-6 p-1">
+            <div class="flex space-x-1">
+                <button onclick="showTab('buat')" id="tab-buat" class="flex-1 py-3 px-4 rounded-md font-medium transition-all btn-primary text-white">
+                    ✏️ Buat Laporan
+                </button>
+                <button onclick="showTab('senarai')" id="tab-senarai" class="flex-1 py-3 px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100">
+                    📄 Senarai Laporan
+                </button>
+                <button onclick="showTab('template')" id="tab-template" class="flex-1 py-3 px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100">
+                    📝 Template
+                </button>
+            </div>
+        </div>
+
+        <!-- Buat Laporan Tab -->
+        <div id="content-buat" class="tab-content">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-xl font-semibold mb-6 text-gray-800">Buat Laporan Baru</h2>
+                
+                <form id="laporanForm" class="space-y-6">
+                    <!-- Jenis Laporan -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Laporan</label>
+                        <select id="jenisLaporan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Pilih jenis laporan...</option>
+                            <option value="sekolah">🏫 Aktiviti Sekolah</option>
+                            <option value="komuniti">🏘️ Aktiviti Komuniti</option>
+                            <option value="gotong-royong">🤝 Gotong-royong</option>
+                            <option value="program">🎯 Program Khusus</option>
+                        </select>
+                    </div>
+
+                    <!-- Tajuk Aktiviti -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tajuk Aktiviti</label>
+                        <input type="text" id="tajukAktiviti" placeholder="Contoh: Hari Sukan Sekolah 2024" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Tarikh & Masa -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tarikh</label>
+                            <input type="date" id="tarikhAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Masa</label>
+                            <input type="time" id="masaAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Lokasi -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi</label>
+                        <input type="text" id="lokasiAktiviti" placeholder="Contoh: Dewan Sekolah / Balai Raya Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Penganjur -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Penganjur</label>
+                        <input type="text" id="penganjur" placeholder="Contoh: PIBG Sekolah / JKKK Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Objektif -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Objektif Aktiviti</label>
+                        <textarea id="objektifAktiviti" rows="3" placeholder="Nyatakan objektif atau tujuan aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Penerangan Aktiviti -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Penerangan Aktiviti</label>
+                        <textarea id="peneranganAktiviti" rows="4" placeholder="Terangkan aktiviti yang dijalankan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Bilangan Peserta -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bilangan Peserta</label>
+                            <input type="number" id="bilanganPeserta" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Lelaki</label>
+                            <input type="number" id="bilanganLelaki" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Perempuan</label>
+                            <input type="number" id="bilanganPerempuan" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Hasil & Pencapaian -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hasil & Pencapaian</label>
+                        <textarea id="hasilPencapaian" rows="3" placeholder="Nyatakan hasil dan pencapaian aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Masalah & Cadangan -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Masalah & Cadangan Penambahbaikan</label>
+                        <textarea id="masalahCadangan" rows="3" placeholder="Nyatakan masalah yang dihadapi dan cadangan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+
+                    <!-- Nama Pelapor -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pelapor</label>
+                        <input type="text" id="namaPelapor" placeholder="Nama lengkap pelapor" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex space-x-4 pt-4">
+                        <button type="submit" class="flex-1 btn-primary text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all">
+                            💾 Simpan Laporan
+                        </button>
+                        <button type="button" onclick="previewLaporan()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-all">
+                            👁️ Preview
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Senarai Laporan Tab -->
+        <div id="content-senarai" class="tab-content hidden">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Senarai Laporan</h2>
+                    <div class="flex space-x-2">
+                        <select id="filterJenis" onchange="filterLaporan()" class="p-2 border border-gray-300 rounded-lg text-sm">
+                            <option value="">Semua Jenis</option>
+                            <option value="sekolah">Sekolah</option>
+                            <option value="komuniti">Komuniti</option>
+                            <option value="gotong-royong">Gotong-royong</option>
+                            <option value="program">Program</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="senarai-laporan" class="space-y-4">
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📄</div>
+                        <p>Belum ada laporan disimpan</p>
+                        <p class="text-sm">Klik "Buat Laporan" untuk mula membuat laporan baru</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Template Tab -->
+        <div id="content-template" class="tab-content hidden">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-xl font-semibold mb-6 text-gray-800">Template Laporan</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('sekolah')">
+                        <div class="text-2xl mb-2">🏫</div>
+                        <h3 class="font-semibold mb-2">Template Sekolah</h3>
+                        <p class="text-sm text-gray-600">Untuk aktiviti sekolah, hari sukan, majlis graduasi, dll.</p>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('komuniti')">
+                        <div class="text-2xl mb-2">🏘️</div>
+                        <h3 class="font-semibold mb-2">Template Komuniti</h3>
+                        <p class="text-sm text-gray-600">Untuk aktiviti kampung, kenduri, program komuniti.</p>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('gotong-royong')">
+                        <div class="text-2xl mb-2">🤝</div>
+                        <h3 class="font-semibold mb-2">Template Gotong-royong</h3>
+                        <p class="text-sm text-gray-600">Untuk aktiviti gotong-royong, kerja-kerja kebersihan.</p>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('program')">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <h3 class="font-semibold mb-2">Template Program Khusus</h3>
+                        <p class="text-sm text-gray-600">Untuk program khas, ceramah, kursus, dll.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">Preview Laporan</h3>
+                <button onclick="tutupPreview()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div id="previewContent" class="p-6"></div>
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <button onclick="downloadPDF()" class="btn-primary text-white py-2 px-4 rounded-lg font-medium">
+                        📥 Download PDF
+                    </button>
+                    <button onclick="kongsiWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium">
+                        📱 Kongsi ke WhatsApp
+                    </button>
+                    <button onclick="kongsiTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium">
+                        ✈️ Kongsi ke Telegram
+                    </button>
+                    <button onclick="tutupPreview()" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg font-medium">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let laporanData = JSON.parse(localStorage.getItem('laporanData')) || [];
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.className = btn.className.replace('btn-primary text-white', 'text-gray-600 hover:bg-gray-100');
+            });
+            
+            // Show selected tab
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).className = document.getElementById(`tab-${tabName}`).className.replace('text-gray-600 hover:bg-gray-100', 'btn-primary text-white');
+            
+            if (tabName === 'senarai') {
+                paparkanSenaraiLaporan();
+            }
+        }
+
+        // Template functionality
+        function gunaTemplate(jenis) {
+            const templates = {
+                sekolah: {
+                    penganjur: 'PIBG Sekolah',
+                    objektif: 'Meningkatkan semangat kerjasama dan kesihatan pelajar melalui aktiviti sukan',
+                    lokasi: 'Padang Sekolah'
+                },
+                komuniti: {
+                    penganjur: 'JKKK Kampung',
+                    objektif: 'Memupuk semangat perpaduan dan kerjasama dalam kalangan penduduk kampung',
+                    lokasi: 'Balai Raya Kampung'
+                },
+                'gotong-royong': {
+                    penganjur: 'JKKK Kampung',
+                    objektif: 'Membersihkan kawasan kampung dan memupuk semangat gotong-royong',
+                    lokasi: 'Kawasan Kampung'
+                },
+                program: {
+                    penganjur: 'Jabatan Kemajuan Masyarakat',
+                    objektif: 'Meningkatkan pengetahuan dan kemahiran masyarakat',
+                    lokasi: 'Dewan Komuniti'
+                }
+            };
+
+            const template = templates[jenis];
+            if (template) {
+                document.getElementById('jenisLaporan').value = jenis;
+                document.getElementById('penganjur').value = template.penganjur;
+                document.getElementById('objektifAktiviti').value = template.objektif;
+                document.getElementById('lokasiAktiviti').value = template.lokasi;
+                
+                showTab('buat');
+                
+                // Show success message
+                showNotification('Template berjaya dimuatkan!', 'success');
+            }
+        }
+
+        // Form submission
+        document.getElementById('laporanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: Date.now(),
+                jenis: document.getElementById('jenisLaporan').value,
+                tajuk: document.getElementById('tajukAktiviti').value,
+                tarikh: document.getElementById('tarikhAktiviti').value,
+                masa: document.getElementById('masaAktiviti').value,
+                lokasi: document.getElementById('lokasiAktiviti').value,
+                penganjur: document.getElementById('penganjur').value,
+                objektif: document.getElementById('objektifAktiviti').value,
+                penerangan: document.getElementById('peneranganAktiviti').value,
+                bilanganPeserta: document.getElementById('bilanganPeserta').value,
+                bilanganLelaki: document.getElementById('bilanganLelaki').value,
+                bilanganPerempuan: document.getElementById('bilanganPerempuan').value,
+                hasil: document.getElementById('hasilPencapaian').value,
+                masalah: document.getElementById('masalahCadangan').value,
+                pelapor: document.getElementById('namaPelapor').value,
+                tarikhDibuat: new Date().toLocaleDateString('ms-MY')
+            };
+
+            // Validation
+            if (!formData.jenis || !formData.tajuk || !formData.tarikh || !formData.pelapor) {
+                showNotification('Sila lengkapkan maklumat yang diperlukan!', 'error');
+                return;
+            }
+
+            laporanData.push(formData);
+            localStorage.setItem('laporanData', JSON.stringify(laporanData));
+            
+            showNotification('Laporan berjaya disimpan!', 'success');
+            document.getElementById('laporanForm').reset();
+        });
+
+        // Display reports list
+        function paparkanSenaraiLaporan() {
+            const container = document.getElementById('senarai-laporan');
+            
+            if (laporanData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📄</div>
+                        <p>Belum ada laporan disimpan</p>
+                        <p class="text-sm">Klik "Buat Laporan" untuk mula membuat laporan baru</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const jenisIcons = {
+                sekolah: '🏫',
+                komuniti: '🏘️',
+                'gotong-royong': '🤝',
+                program: '🎯'
+            };
+
+            container.innerHTML = laporanData.map(laporan => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">${jenisIcons[laporan.jenis] || '📄'}</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
+                                <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="lihatLaporan(${laporan.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                👁️ Lihat
+                            </button>
+                            <button onclick="downloadLaporan(${laporan.id})" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                                📥 Download
+                            </button>
+                            <button onclick="padamLaporan(${laporan.id})" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                🗑️ Padam
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">Penganjur: ${laporan.penganjur}</p>
+                    <p class="text-sm text-gray-600">Peserta: ${laporan.bilanganPeserta || 'Tidak dinyatakan'} orang</p>
+                </div>
+            `).join('');
+        }
+
+        // Filter reports
+        function filterLaporan() {
+            const filter = document.getElementById('filterJenis').value;
+            const filteredData = filter ? laporanData.filter(laporan => laporan.jenis === filter) : laporanData;
+            
+            const container = document.getElementById('senarai-laporan');
+            const jenisIcons = {
+                sekolah: '🏫',
+                komuniti: '🏘️',
+                'gotong-royong': '🤝',
+                program: '🎯'
+            };
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🔍</div>
+                        <p>Tiada laporan dijumpai untuk kategori ini</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredData.map(laporan => `
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">${jenisIcons[laporan.jenis] || '📄'}</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
+                                <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="lihatLaporan(${laporan.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                👁️ Lihat
+                            </button>
+                            <button onclick="downloadLaporan(${laporan.id})" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                                📥 Download
+                            </button>
+                            <button onclick="padamLaporan(${laporan.id})" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                🗑️ Padam
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">Penganjur: ${laporan.penganjur}</p>
+                    <p class="text-sm text-gray-600">Peserta: ${laporan.bilanganPeserta || 'Tidak dinyatakan'} orang</p>
+                </div>
+            `).join('');
+        }
+
+        // Preview functionality
+        function previewLaporan() {
+            const formData = {
+                jenis: document.getElementById('jenisLaporan').value,
+                tajuk: document.getElementById('tajukAktiviti').value,
+                tarikh: document.getElementById('tarikhAktiviti').value,
+                masa: document.getElementById('masaAktiviti').value,
+                lokasi: document.getElementById('lokasiAktiviti').value,
+                penganjur: document.getElementById('penganjur').value,
+                objektif: document.getElementById('objektifAktiviti').value,
+                penerangan: document.getElementById('peneranganAktiviti').value,
+                bilanganPeserta: document.getElementById('bilanganPeserta').value,
+                bilanganLelaki: document.getElementById('bilanganLelaki').value,
+                bilanganPerempuan: document.getElementById('bilanganPerempuan').value,
+                hasil: document.getElementById('hasilPencapaian').value,
+                masalah: document.getElementById('masalahCadangan').value,
+                pelapor: document.getElementById('namaPelapor').value
+            };
+
+            if (!formData.tajuk) {
+                showNotification('Sila isi tajuk aktiviti untuk preview!', 'error');
+                return;
+            }
+
+            generatePreview(formData);
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+
+        function lihatLaporan(id) {
+            const laporan = laporanData.find(l => l.id === id);
+            if (laporan) {
+                generatePreview(laporan);
+                document.getElementById('previewModal').classList.remove('hidden');
+            }
+        }
+
+        function generatePreview(data) {
+            const jenisMap = {
+                sekolah: '🏫 Aktiviti Sekolah',
+                komuniti: '🏘️ Aktiviti Komuniti',
+                'gotong-royong': '🤝 Gotong-royong',
+                program: '🎯 Program Khusus'
+            };
+
+            document.getElementById('previewContent').innerHTML = `
+                <div class="max-w-4xl mx-auto bg-white">
+                    <div class="text-center mb-8 border-b pb-6">
+                        <h1 class="text-2xl font-bold mb-2">LAPORAN AKTIVITI</h1>
+                        <p class="text-lg text-gray-600">${jenisMap[data.jenis] || data.jenis}</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Tajuk Aktiviti:</h3>
+                                <p class="text-gray-600">${data.tajuk || '-'}</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Penganjur:</h3>
+                                <p class="text-gray-600">${data.penganjur || '-'}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Tarikh:</h3>
+                                <p class="text-gray-600">${data.tarikh || '-'}</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Masa:</h3>
+                                <p class="text-gray-600">${data.masa || '-'}</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Lokasi:</h3>
+                                <p class="text-gray-600">${data.lokasi || '-'}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Objektif Aktiviti:</h3>
+                            <p class="text-gray-600">${data.objektif || '-'}</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Penerangan Aktiviti:</h3>
+                            <p class="text-gray-600 whitespace-pre-line">${data.penerangan || '-'}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Jumlah Peserta:</h3>
+                                <p class="text-gray-600">${data.bilanganPeserta || '0'} orang</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Lelaki:</h3>
+                                <p class="text-gray-600">${data.bilanganLelaki || '0'} orang</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Perempuan:</h3>
+                                <p class="text-gray-600">${data.bilanganPerempuan || '0'} orang</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Hasil & Pencapaian:</h3>
+                            <p class="text-gray-600 whitespace-pre-line">${data.hasil || '-'}</p>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Masalah & Cadangan Penambahbaikan:</h3>
+                            <p class="text-gray-600 whitespace-pre-line">${data.masalah || '-'}</p>
+                        </div>
+
+                        <div class="border-t pt-6 mt-8">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-sm text-gray-600">Disediakan oleh:</p>
+                                    <p class="font-semibold mt-8 border-b border-gray-400 pb-1">${data.pelapor || '_________________'}</p>
+                                    <p class="text-sm text-gray-600 mt-1">Nama & Tandatangan</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-600">Tarikh:</p>
+                                    <p class="font-semibold mt-8 border-b border-gray-400 pb-1">${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function tutupPreview() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // Delete report
+        function padamLaporan(id) {
+            if (confirm('Adakah anda pasti ingin memadam laporan ini?')) {
+                laporanData = laporanData.filter(laporan => laporan.id !== id);
+                localStorage.setItem('laporanData', JSON.stringify(laporanData));
+                paparkanSenaraiLaporan();
+                showNotification('Laporan berjaya dipadam!', 'success');
+            }
+        }
+
+        // Download functionality
+        function downloadPDF() {
+            showNotification('Fungsi download akan tersedia tidak lama lagi!', 'info');
+        }
+
+        // Social sharing functions
+        function kongsiWhatsApp() {
+            generateAndSharePDF('whatsapp');
+        }
+
+        function kongsiTelegram() {
+            generateAndSharePDF('telegram');
+        }
+
+        function generateAndSharePDF(platform) {
+            const previewContent = document.getElementById('previewContent');
+            
+            // Create a new window for PDF generation
+            const printWindow = window.open('', '_blank');
+            
+            const laporan = getCurrentReportData();
+            const jenisMap = {
+                sekolah: '🏫 Aktiviti Sekolah',
+                komuniti: '🏘️ Aktiviti Komuniti',
+                'gotong-royong': '🤝 Gotong-royong',
+                program: '🎯 Program Khusus'
+            };
+
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Laporan Aktiviti - ${laporan.tajuk}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px; 
+                            line-height: 1.6;
+                            color: #333;
+                        }
+                        .header { 
+                            text-align: center; 
+                            border-bottom: 2px solid #333; 
+                            padding-bottom: 20px; 
+                            margin-bottom: 30px;
+                        }
+                        .header h1 { 
+                            margin: 0; 
+                            font-size: 24px; 
+                            font-weight: bold;
+                        }
+                        .header p { 
+                            margin: 10px 0 0 0; 
+                            font-size: 18px; 
+                            color: #666;
+                        }
+                        .section { 
+                            margin-bottom: 20px; 
+                        }
+                        .section h3 { 
+                            font-weight: bold; 
+                            margin-bottom: 5px; 
+                            color: #333;
+                            font-size: 14px;
+                        }
+                        .section p { 
+                            margin: 0; 
+                            padding-left: 10px;
+                            font-size: 13px;
+                        }
+                        .grid { 
+                            display: flex; 
+                            gap: 20px; 
+                            margin-bottom: 20px;
+                        }
+                        .grid-item { 
+                            flex: 1; 
+                        }
+                        .signature-section { 
+                            border-top: 1px solid #ccc; 
+                            padding-top: 30px; 
+                            margin-top: 40px;
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .signature-box {
+                            text-align: center;
+                        }
+                        .signature-line {
+                            border-bottom: 1px solid #333;
+                            width: 200px;
+                            margin: 60px auto 10px auto;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>LAPORAN AKTIVITI</h1>
+                        <p>${jenisMap[laporan.jenis] || laporan.jenis}</p>
+                    </div>
+
+                    <div class="grid">
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Tajuk Aktiviti:</h3>
+                                <p>${laporan.tajuk || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Penganjur:</h3>
+                                <p>${laporan.penganjur || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Tarikh:</h3>
+                                <p>${laporan.tarikh || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Masa:</h3>
+                                <p>${laporan.masa || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Lokasi:</h3>
+                                <p>${laporan.lokasi || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>Objektif Aktiviti:</h3>
+                        <p>${laporan.objektif || '-'}</p>
+                    </div>
+
+                    <div class="section">
+                        <h3>Penerangan Aktiviti:</h3>
+                        <p style="white-space: pre-line;">${laporan.penerangan || '-'}</p>
+                    </div>
+
+                    <div class="grid">
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Jumlah Peserta:</h3>
+                                <p>${laporan.bilanganPeserta || '0'} orang</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Lelaki:</h3>
+                                <p>${laporan.bilanganLelaki || '0'} orang</p>
+                            </div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="section">
+                                <h3>Perempuan:</h3>
+                                <p>${laporan.bilanganPerempuan || '0'} orang</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>Hasil & Pencapaian:</h3>
+                        <p style="white-space: pre-line;">${laporan.hasil || '-'}</p>
+                    </div>
+
+                    <div class="section">
+                        <h3>Masalah & Cadangan Penambahbaikan:</h3>
+                        <p style="white-space: pre-line;">${laporan.masalah || '-'}</p>
+                    </div>
+
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <p style="font-size: 12px; margin-bottom: 5px;">Disediakan oleh:</p>
+                            <div class="signature-line"></div>
+                            <p style="font-size: 12px; margin-top: 5px;">${laporan.pelapor || '_________________'}</p>
+                            <p style="font-size: 10px; color: #666;">Nama & Tandatangan</p>
+                        </div>
+                        <div class="signature-box">
+                            <p style="font-size: 12px; margin-bottom: 5px;">Tarikh:</p>
+                            <div class="signature-line"></div>
+                            <p style="font-size: 12px; margin-top: 5px;">${laporan.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}</p>
+                        </div>
+                    </div>
+
+                    <div class="no-print" style="margin-top: 30px; text-align: center; padding: 20px; background: #f0f0f0; border-radius: 10px;">
+                        <p style="margin-bottom: 15px; font-weight: bold;">Untuk kongsi ke ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}:</p>
+                        <p style="margin-bottom: 15px; font-size: 14px;">1. Klik "Print" atau tekan Ctrl+P</p>
+                        <p style="margin-bottom: 15px; font-size: 14px;">2. Pilih "Save as PDF" atau "Microsoft Print to PDF"</p>
+                        <p style="margin-bottom: 15px; font-size: 14px;">3. Simpan fail PDF</p>
+                        <p style="margin-bottom: 20px; font-size: 14px;">4. Kongsi fail PDF tersebut ke ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}</p>
+                        <button onclick="window.print()" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-right: 10px;">🖨️ Print/Save as PDF</button>
+                        <button onclick="window.close()" style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">❌ Tutup</button>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            
+            // Show notification
+            const platformName = platform === 'whatsapp' ? 'WhatsApp' : 'Telegram';
+            showNotification(`Membuka tetingkap untuk jana PDF dan kongsi ke ${platformName}!`, 'success');
+        }
+
+        function getCurrentReportData() {
+            // Try to get data from form first (if in preview mode)
+            const formData = {
+                jenis: document.getElementById('jenisLaporan').value,
+                tajuk: document.getElementById('tajukAktiviti').value,
+                tarikh: document.getElementById('tarikhAktiviti').value,
+                masa: document.getElementById('masaAktiviti').value,
+                lokasi: document.getElementById('lokasiAktiviti').value,
+                penganjur: document.getElementById('penganjur').value,
+                objektif: document.getElementById('objektifAktiviti').value,
+                penerangan: document.getElementById('peneranganAktiviti').value,
+                bilanganPeserta: document.getElementById('bilanganPeserta').value,
+                bilanganLelaki: document.getElementById('bilanganLelaki').value,
+                bilanganPerempuan: document.getElementById('bilanganPerempuan').value,
+                hasil: document.getElementById('hasilPencapaian').value,
+                masalah: document.getElementById('masalahCadangan').value,
+                pelapor: document.getElementById('namaPelapor').value,
+                tarikhDibuat: new Date().toLocaleDateString('ms-MY')
+            };
+
+            // If form has data, use it; otherwise extract from preview
+            if (formData.tajuk) {
+                return formData;
+            }
+
+            // Fallback: extract from preview content
+            const previewContent = document.getElementById('previewContent');
+            return extractReportData(previewContent);
+        }
+
+        function extractReportData(previewElement) {
+            // Extract data from the preview content
+            const title = previewElement.querySelector('h1')?.textContent || 'Laporan Aktiviti';
+            const content = previewElement.textContent || '';
+            
+            // Try to extract key information
+            const lines = content.split('\n').filter(line => line.trim());
+            let tajuk = '', tarikh = '', lokasi = '', penganjur = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.includes('Tajuk Aktiviti:')) {
+                    tajuk = lines[i + 1]?.trim() || '';
+                } else if (line.includes('Tarikh:')) {
+                    tarikh = lines[i + 1]?.trim() || '';
+                } else if (line.includes('Lokasi:')) {
+                    lokasi = lines[i + 1]?.trim() || '';
+                } else if (line.includes('Penganjur:')) {
+                    penganjur = lines[i + 1]?.trim() || '';
+                }
+            }
+            
+            return { title, tajuk, tarikh, lokasi, penganjur };
+        }
+
+        function formatMessageForSharing(laporan) {
+            return `📋 *${laporan.title}*
+
+🎯 *${laporan.tajuk || 'Aktiviti'}*
+
+📅 Tarikh: ${laporan.tarikh || 'Tidak dinyatakan'}
+📍 Lokasi: ${laporan.lokasi || 'Tidak dinyatakan'}  
+👥 Penganjur: ${laporan.penganjur || 'Tidak dinyatakan'}
+
+_Laporan lengkap telah disediakan menggunakan Sistem Laporan Aktiviti_
+
+#LaporanAktiviti #Komuniti #Sekolah`;
+        }
+
+        function downloadLaporan(id) {
+            const laporan = laporanData.find(l => l.id === id);
+            if (laporan) {
+                // Create downloadable text file
+                const content = generateTextReport(laporan);
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Laporan_${laporan.tajuk.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Laporan berjaya dimuat turun!', 'success');
+            }
+        }
+
+        function generateTextReport(data) {
+            const jenisMap = {
+                sekolah: 'Aktiviti Sekolah',
+                komuniti: 'Aktiviti Komuniti',
+                'gotong-royong': 'Gotong-royong',
+                program: 'Program Khusus'
+            };
+
+            return `
+LAPORAN AKTIVITI
+${jenisMap[data.jenis] || data.jenis}
+=====================================
+
+Tajuk Aktiviti: ${data.tajuk || '-'}
+Penganjur: ${data.penganjur || '-'}
+Tarikh: ${data.tarikh || '-'}
+Masa: ${data.masa || '-'}
+Lokasi: ${data.lokasi || '-'}
+
+OBJEKTIF AKTIVITI:
+${data.objektif || '-'}
+
+PENERANGAN AKTIVITI:
+${data.penerangan || '-'}
+
+BILANGAN PESERTA:
+- Jumlah: ${data.bilanganPeserta || '0'} orang
+- Lelaki: ${data.bilanganLelaki || '0'} orang
+- Perempuan: ${data.bilanganPerempuan || '0'} orang
+
+HASIL & PENCAPAIAN:
+${data.hasil || '-'}
+
+MASALAH & CADANGAN PENAMBAHBAIKAN:
+${data.masalah || '-'}
+
+Disediakan oleh: ${data.pelapor || '-'}
+Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
+            `.trim();
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Auto-calculate total participants
+        document.getElementById('bilanganLelaki').addEventListener('input', updateTotal);
+        document.getElementById('bilanganPerempuan').addEventListener('input', updateTotal);
+
+        function updateTotal() {
+            const lelaki = parseInt(document.getElementById('bilanganLelaki').value) || 0;
+            const perempuan = parseInt(document.getElementById('bilanganPerempuan').value) || 0;
+            document.getElementById('bilanganPeserta').value = lelaki + perempuan;
+        }
+
+        // Initialize
+        paparkanSenaraiLaporan();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ee45dcb3de8177',t:'MTc1NzgzNjAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
