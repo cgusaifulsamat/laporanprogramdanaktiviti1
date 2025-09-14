@@ -3,1033 +3,866 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Aktiviti - Sekolah & Komuniti</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Sistem Laporan Aktiviti</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .btn-primary:hover { background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); }
-        
-        /* Mobile optimizations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            min-height: calc(100vh - 20px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            color: #64748b;
+        }
+
+        .tab.active {
+            background: white;
+            color: #6366f1;
+            border-bottom: 2px solid #6366f1;
+        }
+
+        .tab:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .tab.active:hover {
+            background: white;
+            color: #6366f1;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 32px 24px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .image-upload {
+            grid-column: 1 / -1;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #4facfe;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .image-upload-area:hover {
+            background: #f0f8ff;
+            border-color: #0066cc;
+        }
+
+        .image-upload-area.dragover {
+            background: #e6f3ff;
+            border-color: #0066cc;
+        }
+
+        .image-preview {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.25px;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5b21b6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .reports-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .report-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .report-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .report-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .report-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-detail-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .report-detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal h3 {
+            color: #4facfe;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .modal p {
+            margin-bottom: 30px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
         @media (max-width: 768px) {
-            body { font-size: 16px; }
-            .mobile-text { font-size: 16px !important; }
-            .mobile-title { font-size: 18px !important; }
-            .mobile-header { font-size: 24px !important; }
-            .mobile-button { font-size: 16px !important; padding: 12px 16px !important; }
-            .mobile-input { font-size: 16px !important; padding: 12px !important; }
-            .mobile-select { font-size: 16px !important; padding: 12px !important; }
-            .mobile-textarea { font-size: 16px !important; padding: 12px !important; }
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                border-radius: 12px;
+                min-height: calc(100vh - 10px);
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header {
+                padding: 32px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tab {
+                padding: 20px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .tab-content {
+                padding: 24px 16px;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 14px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .btn {
+                padding: 16px 20px;
+                font-size: 1rem;
+                width: 100%;
+            }
+            
+            .modal-content {
+                margin: 20px;
+                width: calc(100% - 40px);
+                padding: 32px 24px;
+            }
+            
+            .report-details {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .report-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <div class="gradient-bg text-white p-6 shadow-lg">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-2xl md:text-2xl font-bold mb-2 mobile-header">📋 Laporan Aktiviti</h1>
-            <p class="text-blue-100 mobile-text">Sistem mudah untuk laporan sekolah & komuniti</p>
-        </div>
-    </div>
-
-    <!-- Main Container -->
-    <div class="max-w-4xl mx-auto p-3 md:p-6">
-        <!-- Navigation Tabs -->
-        <div class="bg-white rounded-lg card-shadow mb-6 p-1">
-            <div class="flex space-x-1">
-                <button onclick="showTab('buat')" id="tab-buat" class="flex-1 py-3 px-2 md:px-4 rounded-md font-medium transition-all btn-primary text-white mobile-button">
-                    <span class="hidden sm:inline">✏️ Buat Laporan</span>
-                    <span class="sm:hidden">✏️ Buat</span>
-                </button>
-                <button onclick="showTab('senarai')" id="tab-senarai" class="flex-1 py-3 px-2 md:px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100 mobile-button">
-                    <span class="hidden sm:inline">📄 Senarai Laporan</span>
-                    <span class="sm:hidden">📄 Senarai</span>
-                </button>
-
-            </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Sistem Laporan Aktiviti</h1>
+            <p>Pengurusan Laporan Sekolah & Komuniti Kampung</p>
         </div>
 
-        <!-- Buat Laporan Tab -->
-        <div id="content-buat" class="tab-content">
-            <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
-                <h2 class="text-xl font-semibold mb-6 text-gray-800 mobile-title">Buat Laporan Baru</h2>
-                
-                <form id="laporanForm" class="space-y-6">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('form')">📝 Buat Laporan Baru</button>
+            <button class="tab" onclick="switchTab('reports')">📚 Rekod Laporan</button>
+        </div>
 
-
-                    <!-- Tajuk Aktiviti -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Tajuk Aktiviti</label>
-                        <input type="text" id="tajukAktiviti" placeholder="Contoh: Hari Sukan Sekolah 2024" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
+        <div id="form-tab" class="tab-content active">
+            <form id="reportForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="namaProgram">Nama Program *</label>
+                        <input type="text" id="namaProgram" required>
                     </div>
 
-                    <!-- Tarikh, Masa & Hari -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Tarikh</label>
-                            <input type="date" id="tarikhAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Masa</label>
-                            <input type="time" id="masaAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Hari</label>
-                            <input type="text" id="hariAktiviti" readonly class="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 mobile-input">
-                        </div>
-                    </div>
-
-                    <!-- Lokasi -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Lokasi</label>
-                        <input type="text" id="lokasiAktiviti" placeholder="Contoh: Dewan Sekolah / Balai Raya Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                    </div>
-
-                    <!-- Penganjur -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Penganjur</label>
-                        <input type="text" id="penganjur" placeholder="Contoh: PIBG Sekolah / JKKK Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                    </div>
-
-                    <!-- Peringkat -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Peringkat</label>
-                        <select id="peringkat" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-select">
-                            <option value="">Pilih peringkat...</option>
-                            <option value="komuniti">🏘️ Komuniti</option>
-                            <option value="sekolah">🏫 Sekolah</option>
-                            <option value="daerah">🏛️ Daerah</option>
-                            <option value="bahagian">🏢 Bahagian</option>
-                            <option value="negeri">🏴 Negeri</option>
-                            <option value="kebangsaan">🇲🇾 Kebangsaan</option>
-                            <option value="antarabangsa">🌍 Antarabangsa</option>
+                    <div class="form-group">
+                        <label for="hari">Hari *</label>
+                        <select id="hari" required>
+                            <option value="">Pilih Hari</option>
+                            <option value="Isnin">Isnin</option>
+                            <option value="Selasa">Selasa</option>
+                            <option value="Rabu">Rabu</option>
+                            <option value="Khamis">Khamis</option>
+                            <option value="Jumaat">Jumaat</option>
+                            <option value="Sabtu">Sabtu</option>
+                            <option value="Ahad">Ahad</option>
                         </select>
                     </div>
 
-                    <!-- Bilangan Peserta -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Bilangan Peserta</label>
-                        <input type="number" id="bilanganPeserta" placeholder="Contoh: 50" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
+                    <div class="form-group">
+                        <label for="masa">Masa *</label>
+                        <input type="time" id="masa" required>
                     </div>
 
-                    <!-- Upload Gambar -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Upload Gambar Aktiviti</label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                            <input type="file" id="gambarAktiviti" accept="image/*" multiple class="hidden" onchange="handleImageUpload(event)">
-                            <div id="uploadArea" onclick="document.getElementById('gambarAktiviti').click()" class="cursor-pointer">
-                                <div class="text-4xl mb-2">📷</div>
-                                <p class="text-gray-600 mb-2 mobile-text">Klik untuk pilih gambar</p>
-                                <p class="text-sm text-gray-500">Boleh pilih beberapa gambar sekaligus</p>
+                    <div class="form-group">
+                        <label for="tarikh">Tarikh *</label>
+                        <input type="date" id="tarikh" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tempat">Tempat *</label>
+                        <input type="text" id="tempat" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="penganjur">Penganjur *</label>
+                        <input type="text" id="penganjur" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="peringkat">Peringkat *</label>
+                        <select id="peringkat" required>
+                            <option value="">Pilih Peringkat</option>
+                            <option value="Sekolah">Sekolah</option>
+                            <option value="Daerah">Daerah</option>
+                            <option value="Negeri">Negeri</option>
+                            <option value="Kebangsaan">Kebangsaan</option>
+                            <option value="Kampung">Kampung</option>
+                            <option value="Komuniti">Komuniti</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jumlahPeserta">Jumlah Peserta *</label>
+                        <input type="number" id="jumlahPeserta" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="namaPelapor">Nama Pelapor *</label>
+                        <input type="text" id="namaPelapor" required>
+                    </div>
+
+                    <div class="form-group image-upload">
+                        <label>Gambar Aktiviti</label>
+                        <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                            <div>
+                                <p style="font-size: 3rem; margin-bottom: 10px;">📷</p>
+                                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 5px;">Klik untuk pilih gambar</p>
+                                <p style="color: #6c757d;">atau seret dan lepas gambar di sini</p>
                             </div>
-                            <div id="previewImages" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 hidden"></div>
+                        </div>
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImg" alt="Preview">
+                            <p style="margin-top: 10px; color: #6c757d;">Gambar dipilih</p>
                         </div>
                     </div>
+                </div>
 
-
-
-                    <!-- Nama Pelapor -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Nama Pelapor</label>
-                        <input type="text" id="namaPelapor" placeholder="Nama lengkap pelapor" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
-                        <button type="submit" class="flex-1 btn-primary text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all mobile-button">
-                            💾 Simpan Laporan
-                        </button>
-                        <button type="button" onclick="previewLaporan()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-all mobile-button">
-                            👁️ Preview
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">💾 Simpan Laporan</button>
+                </div>
+            </form>
         </div>
 
-        <!-- Senarai Laporan Tab -->
-        <div id="content-senarai" class="tab-content hidden">
-            <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mobile-title">Senarai Laporan</h2>
-
-                </div>
-                
-                <div id="senarai-laporan" class="space-y-4">
-                    <div class="text-center py-8 text-gray-500">
-                        <div class="text-4xl mb-2">📄</div>
-                        <p>Belum ada laporan disimpan</p>
-                        <p class="text-sm">Klik "Buat Laporan" untuk mula membuat laporan baru</p>
-                    </div>
+        <div id="reports-tab" class="tab-content">
+            <div id="reportsList" class="reports-grid">
+                <div class="empty-state">
+                    <h3>📋 Tiada Laporan Lagi</h3>
+                    <p>Laporan yang disimpan akan dipaparkan di sini</p>
                 </div>
             </div>
         </div>
-
-
     </div>
 
-    <!-- Preview Modal -->
-    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="text-lg font-semibold">Preview Laporan</h3>
-                <button onclick="tutupPreview()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-            </div>
-            <div id="previewContent" class="p-6"></div>
-            <div class="p-6 border-t border-gray-200">
-                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                    <button onclick="downloadPDF()" class="btn-primary text-white py-2 px-4 rounded-lg font-medium mobile-button">
-                        📥 Download PDF
-                    </button>
-                    <button onclick="kongsiWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium mobile-button">
-                        📱 Kongsi ke WhatsApp
-                    </button>
-                    <button onclick="kongsiTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium mobile-button">
-                        ✈️ Kongsi ke Telegram
-                    </button>
-                    <button onclick="tutupPreview()" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg font-medium mobile-button">
-                        Tutup
-                    </button>
-                </div>
+    <!-- Modal untuk PDF -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <h3>🎉 Laporan Berjaya Disimpan!</h3>
+            <p>Laporan anda telah disimpan dengan jayanya. Adakah anda ingin memuat turun laporan dalam format PDF?</p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="downloadPDF()">📄 Muat Turun PDF</button>
+                <button class="btn btn-secondary" onclick="closeModal()">❌ Tutup</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Data storage
-        let laporanData = JSON.parse(localStorage.getItem('laporanData')) || [];
+        let reports = JSON.parse(localStorage.getItem('reports')) || [];
+        let currentReport = null;
 
-        // Tab functionality
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            // Remove active class from all buttons
-            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
-                btn.className = btn.className.replace('btn-primary text-white', 'text-gray-600 hover:bg-gray-100');
-            });
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
             
-            // Show selected tab
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabName}`).className = document.getElementById(`tab-${tabName}`).className.replace('text-gray-600 hover:bg-gray-100', 'btn-primary text-white');
-            
-            if (tabName === 'senarai') {
-                paparkanSenaraiLaporan();
+            if (tabName === 'reports') {
+                displayReports();
             }
         }
 
-        // Auto-fill date, time and day functionality
-        function autoFillDateTime() {
-            const now = new Date();
-            
-            // Set current date
-            const today = now.toISOString().split('T')[0];
-            document.getElementById('tarikhAktiviti').value = today;
-            
-            // Set current time (rounded to nearest 15 minutes)
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const roundedMinute = Math.round(currentMinute / 15) * 15;
-            const timeString = `${currentHour.toString().padStart(2, '0')}:${roundedMinute.toString().padStart(2, '0')}`;
-            document.getElementById('masaAktiviti').value = timeString;
-            
-            // Set day name in Malay
-            updateDayName();
-        }
+        // Image upload handling
+        const imageInput = document.getElementById('imageInput');
+        const imageUploadArea = document.querySelector('.image-upload-area');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
 
-        function updateDayName() {
-            const dateInput = document.getElementById('tarikhAktiviti');
-            const dayInput = document.getElementById('hariAktiviti');
-            
-            if (dateInput.value) {
-                const date = new Date(dateInput.value);
-                const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-                dayInput.value = days[date.getDay()];
-            } else {
-                dayInput.value = '';
+        imageInput.addEventListener('change', handleImageSelect);
+
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageInput.files = files;
+                handleImageSelect();
+            }
+        });
+
+        function handleImageSelect() {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
             }
         }
-
-        // Add event listener for date change
-        document.getElementById('tarikhAktiviti').addEventListener('change', updateDayName);
 
         // Form submission
-        document.getElementById('laporanForm').addEventListener('submit', function(e) {
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const formData = {
+            const formData = new FormData(this);
+            const report = {
                 id: Date.now(),
-                tajuk: document.getElementById('tajukAktiviti').value,
-                tarikh: document.getElementById('tarikhAktiviti').value,
-                masa: document.getElementById('masaAktiviti').value,
-                hari: document.getElementById('hariAktiviti').value,
-                lokasi: document.getElementById('lokasiAktiviti').value,
+                namaProgram: document.getElementById('namaProgram').value,
+                hari: document.getElementById('hari').value,
+                masa: document.getElementById('masa').value,
+                tarikh: document.getElementById('tarikh').value,
+                tempat: document.getElementById('tempat').value,
                 penganjur: document.getElementById('penganjur').value,
                 peringkat: document.getElementById('peringkat').value,
-                bilanganPeserta: document.getElementById('bilanganPeserta').value,
-                pelapor: document.getElementById('namaPelapor').value,
-                gambar: uploadedImages,
+                jumlahPeserta: document.getElementById('jumlahPeserta').value,
+                namaPelapor: document.getElementById('namaPelapor').value,
+                gambar: previewImg.src || null,
                 tarikhDibuat: new Date().toLocaleDateString('ms-MY')
             };
 
-            // Validation
-            if (!formData.tajuk || !formData.tarikh || !formData.pelapor) {
-                showNotification('Sila lengkapkan maklumat yang diperlukan!', 'error');
-                return;
-            }
+            reports.push(report);
+            localStorage.setItem('reports', JSON.stringify(reports));
+            currentReport = report;
 
-            laporanData.push(formData);
-            localStorage.setItem('laporanData', JSON.stringify(laporanData));
-            
-            showNotification('Laporan berjaya disimpan!', 'success');
-            document.getElementById('laporanForm').reset();
-            uploadedImages = [];
-            displayImagePreviews();
+            // Reset form
+            this.reset();
+            imagePreview.style.display = 'none';
+
+            // Show modal
+            document.getElementById('pdfModal').style.display = 'block';
         });
 
-        // Display reports list
-        function paparkanSenaraiLaporan() {
-            const container = document.getElementById('senarai-laporan');
+        // Display reports
+        function displayReports() {
+            const reportsList = document.getElementById('reportsList');
             
-            if (laporanData.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <div class="text-4xl mb-2">📄</div>
-                        <p>Belum ada laporan disimpan</p>
-                        <p class="text-sm">Klik "Buat Laporan" untuk mula membuat laporan baru</p>
+            if (reports.length === 0) {
+                reportsList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📋 Tiada Laporan Lagi</h3>
+                        <p>Laporan yang disimpan akan dipaparkan di sini</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = laporanData.map(laporan => `
-                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-2xl">📋</span>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">${laporan.tajuk}</h3>
-                                <p class="text-sm text-gray-600">${laporan.tarikh} • ${laporan.lokasi}</p>
-                                ${laporan.peringkat ? `<p class="text-xs text-blue-600">Peringkat: ${laporan.peringkat}</p>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="lihatLaporan(${laporan.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                👁️ Lihat
-                            </button>
-                            <button onclick="downloadLaporan(${laporan.id})" class="text-green-600 hover:text-green-800 text-sm font-medium">
-                                📥 Download
-                            </button>
-                            <button onclick="padamLaporan(${laporan.id})" class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                🗑️ Padam
-                            </button>
+            reportsList.innerHTML = reports.map(report => `
+                <div class="report-card">
+                    <div class="report-header">
+                        <div>
+                            <div class="report-title">${report.namaProgram}</div>
+                            <div class="report-date">Dibuat: ${report.tarikhDibuat}</div>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-600 mb-2">Penganjur: ${laporan.penganjur}</p>
-                    <p class="text-sm text-gray-600">Peserta: ${laporan.bilanganPeserta || 'Tidak dinyatakan'} orang</p>
+                    
+                    <div class="report-details">
+                        <div class="report-detail">
+                            <div class="report-detail-label">Tarikh & Masa</div>
+                            <div class="report-detail-value">${report.hari}, ${report.tarikh} - ${report.masa}</div>
+                        </div>
+                        <div class="report-detail">
+                            <div class="report-detail-label">Tempat</div>
+                            <div class="report-detail-value">${report.tempat}</div>
+                        </div>
+                        <div class="report-detail">
+                            <div class="report-detail-label">Penganjur</div>
+                            <div class="report-detail-value">${report.penganjur}</div>
+                        </div>
+                        <div class="report-detail">
+                            <div class="report-detail-label">Peringkat</div>
+                            <div class="report-detail-value">${report.peringkat}</div>
+                        </div>
+                        <div class="report-detail">
+                            <div class="report-detail-label">Peserta</div>
+                            <div class="report-detail-value">${report.jumlahPeserta} orang</div>
+                        </div>
+                        <div class="report-detail">
+                            <div class="report-detail-label">Pelapor</div>
+                            <div class="report-detail-value">${report.namaPelapor}</div>
+                        </div>
+                    </div>
+
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="generatePDF(${report.id})">📄 Muat Turun PDF</button>
+                        <button class="btn btn-danger" onclick="deleteReport(${report.id})">🗑️ Padam</button>
+                    </div>
                 </div>
             `).join('');
         }
 
+        // PDF Generation
+        function downloadPDF() {
+            generatePDF(currentReport.id);
+            closeModal();
+        }
 
+        function generatePDF(reportId) {
+            const report = reports.find(r => r.id === reportId);
+            if (!report) return;
 
-        // Preview functionality
-        function previewLaporan() {
-            const formData = {
-                tajuk: document.getElementById('tajukAktiviti').value,
-                tarikh: document.getElementById('tarikhAktiviti').value,
-                masa: document.getElementById('masaAktiviti').value,
-                hari: document.getElementById('hariAktiviti').value,
-                lokasi: document.getElementById('lokasiAktiviti').value,
-                penganjur: document.getElementById('penganjur').value,
-                peringkat: document.getElementById('peringkat').value,
-                bilanganPeserta: document.getElementById('bilanganPeserta').value,
-                pelapor: document.getElementById('namaPelapor').value,
-                gambar: uploadedImages
-            };
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-            if (!formData.tajuk) {
-                showNotification('Sila isi tajuk aktiviti untuk preview!', 'error');
-                return;
+            // Set colors
+            const primaryColor = [79, 172, 254];
+            const secondaryColor = [102, 126, 234];
+            const textColor = [51, 51, 51];
+
+            // Header with gradient effect
+            doc.setFillColor(...primaryColor);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setFillColor(...secondaryColor);
+            doc.rect(0, 0, 210, 25, 'F');
+
+            // Title
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.setFont(undefined, 'bold');
+            doc.text('LAPORAN AKTIVITI', 105, 15, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text('Sekolah & Komuniti Kampung', 105, 22, { align: 'center' });
+
+            // Reset text color
+            doc.setTextColor(...textColor);
+
+            let yPos = 55;
+
+            // Program name - highlighted
+            doc.setFillColor(248, 249, 250);
+            doc.rect(15, yPos - 5, 180, 15, 'F');
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text(report.namaProgram, 20, yPos + 5);
+
+            yPos += 25;
+
+            // Details in two columns
+            const leftCol = 20;
+            const rightCol = 110;
+            doc.setFontSize(11);
+
+            // Left column
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text('TARIKH & MASA', leftCol, yPos);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...textColor);
+            doc.text(`${report.hari}, ${report.tarikh}`, leftCol, yPos + 7);
+            doc.text(`Masa: ${report.masa}`, leftCol, yPos + 14);
+
+            // Right column
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text('TEMPAT', rightCol, yPos);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...textColor);
+            doc.text(report.tempat, rightCol, yPos + 7);
+
+            yPos += 30;
+
+            // Second row
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text('PENGANJUR', leftCol, yPos);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...textColor);
+            doc.text(report.penganjur, leftCol, yPos + 7);
+
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text('PERINGKAT', rightCol, yPos);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...textColor);
+            doc.text(report.peringkat, rightCol, yPos + 7);
+
+            yPos += 25;
+
+            // Third row
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text('JUMLAH PESERTA', leftCol, yPos);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...textColor);
+            doc.text(`${report.jumlahPeserta} orang`, leftCol, yPos + 7);
+
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(...primaryColor);
+            doc.text('PELAPOR', rightCol, yPos);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(...textColor);
+            doc.text(report.namaPelapor, rightCol, yPos + 7);
+
+            yPos += 30;
+
+            // Image section
+            if (report.gambar) {
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(...primaryColor);
+                doc.text('GAMBAR AKTIVITI', leftCol, yPos);
+                yPos += 10;
+                
+                try {
+                    doc.addImage(report.gambar, 'JPEG', leftCol, yPos, 80, 60);
+                    yPos += 70;
+                } catch (e) {
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(150, 150, 150);
+                    doc.text('Gambar tidak dapat dipaparkan', leftCol, yPos + 10);
+                    yPos += 20;
+                }
             }
 
-            generatePreview(formData);
-            document.getElementById('previewModal').classList.remove('hidden');
-        }
+            // Footer
+            yPos = 270;
+            doc.setFillColor(...primaryColor);
+            doc.rect(0, yPos, 210, 27, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Laporan dijana pada: ${new Date().toLocaleDateString('ms-MY')}`, 105, yPos + 10, { align: 'center' });
+            doc.text('Sistem Laporan Aktiviti - Sekolah & Komuniti', 105, yPos + 17, { align: 'center' });
 
-        function lihatLaporan(id) {
-            const laporan = laporanData.find(l => l.id === id);
-            if (laporan) {
-                generatePreview(laporan);
-                document.getElementById('previewModal').classList.remove('hidden');
-            }
-        }
-
-        function generatePreview(data) {
-            const peringkatMap = {
-                'komuniti': '🏘️ Komuniti',
-                'sekolah': '🏫 Sekolah',
-                'daerah': '🏛️ Daerah',
-                'bahagian': '🏢 Bahagian',
-                'negeri': '🏴 Negeri',
-                'kebangsaan': '🇲🇾 Kebangsaan',
-                'antarabangsa': '🌍 Antarabangsa'
-            };
-
-            document.getElementById('previewContent').innerHTML = `
-                <div class="max-w-4xl mx-auto bg-white">
-                    <div class="text-center mb-8 border-b pb-6">
-                        <h1 class="text-2xl font-bold mb-2">LAPORAN AKTIVITI</h1>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Tajuk Aktiviti:</h3>
-                                <p class="text-gray-600">${data.tajuk || '-'}</p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Penganjur:</h3>
-                                <p class="text-gray-600">${data.penganjur || '-'}</p>
-                            </div>
-                        </div>
-
-                        ${data.peringkat ? `
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Peringkat:</h3>
-                            <p class="text-gray-600">${peringkatMap[data.peringkat] || data.peringkat}</p>
-                        </div>
-                        ` : ''}
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Tarikh:</h3>
-                                <p class="text-gray-600">${data.tarikh || '-'}</p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Hari:</h3>
-                                <p class="text-gray-600">${data.hari || '-'}</p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Masa:</h3>
-                                <p class="text-gray-600">${data.masa || '-'}</p>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Lokasi:</h3>
-                                <p class="text-gray-600">${data.lokasi || '-'}</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Bilangan Peserta:</h3>
-                            <p class="text-gray-600">${data.bilanganPeserta || '0'} orang</p>
-                        </div>
-
-                        ${data.gambar && data.gambar.length > 0 ? `
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-2">Gambar Aktiviti:</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                ${data.gambar.map(img => `
-                                    <div class="border rounded-lg overflow-hidden">
-                                        <img src="${img}" alt="Gambar aktiviti" class="w-full h-32 object-cover">
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        ` : ''}
-
-
-
-                        <div class="border-t pt-6 mt-8">
-                            <div class="flex justify-between items-end">
-                                <div>
-                                    <p class="text-sm text-gray-600">Disediakan oleh:</p>
-                                    <p class="font-semibold mt-8 border-b border-gray-400 pb-1">${data.pelapor || '_________________'}</p>
-                                    <p class="text-sm text-gray-600 mt-1">Nama & Tandatangan</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm text-gray-600">Tarikh:</p>
-                                    <p class="font-semibold mt-8 border-b border-gray-400 pb-1">${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function tutupPreview() {
-            document.getElementById('previewModal').classList.add('hidden');
+            // Save PDF
+            doc.save(`Laporan_${report.namaProgram.replace(/\s+/g, '_')}_${report.tarikh}.pdf`);
         }
 
         // Delete report
-        function padamLaporan(id) {
+        function deleteReport(reportId) {
             if (confirm('Adakah anda pasti ingin memadam laporan ini?')) {
-                laporanData = laporanData.filter(laporan => laporan.id !== id);
-                localStorage.setItem('laporanData', JSON.stringify(laporanData));
-                paparkanSenaraiLaporan();
-                showNotification('Laporan berjaya dipadam!', 'success');
+                reports = reports.filter(r => r.id !== reportId);
+                localStorage.setItem('reports', JSON.stringify(reports));
+                displayReports();
             }
         }
 
-        // Download functionality
-        function downloadPDF() {
-            const laporan = getCurrentReportData();
-            const peringkatMap = {
-                'komuniti': '🏘️ Komuniti',
-                'sekolah': '🏫 Sekolah',
-                'daerah': '🏛️ Daerah',
-                'bahagian': '🏢 Bahagian',
-                'negeri': '🏴 Negeri',
-                'kebangsaan': '🇲🇾 Kebangsaan',
-                'antarabangsa': '🌍 Antarabangsa'
-            };
-
-            // Create a new window for PDF generation
-            const printWindow = window.open('', '_blank');
-            
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Laporan Aktiviti - ${laporan.tajuk}</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            margin: 20px; 
-                            line-height: 1.6;
-                            color: #333;
-                        }
-                        .header { 
-                            text-align: center; 
-                            border-bottom: 2px solid #333; 
-                            padding-bottom: 20px; 
-                            margin-bottom: 30px;
-                        }
-                        .header h1 { 
-                            margin: 0; 
-                            font-size: 24px; 
-                            font-weight: bold;
-                        }
-                        .section { 
-                            margin-bottom: 20px; 
-                        }
-                        .section h3 { 
-                            font-weight: bold; 
-                            margin-bottom: 5px; 
-                            color: #333;
-                            font-size: 14px;
-                        }
-                        .section p { 
-                            margin: 0; 
-                            padding-left: 10px;
-                            font-size: 13px;
-                        }
-                        .grid { 
-                            display: flex; 
-                            gap: 20px; 
-                            margin-bottom: 20px;
-                        }
-                        .grid-item { 
-                            flex: 1; 
-                        }
-                        .signature-section { 
-                            border-top: 1px solid #ccc; 
-                            padding-top: 30px; 
-                            margin-top: 40px;
-                            display: flex;
-                            justify-content: space-between;
-                        }
-                        .signature-box {
-                            text-align: center;
-                        }
-                        .signature-line {
-                            border-bottom: 1px solid #333;
-                            width: 200px;
-                            margin: 60px auto 10px auto;
-                        }
-                        @media print {
-                            body { margin: 0; }
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>LAPORAN AKTIVITI</h1>
-                    </div>
-
-                    <div class="grid">
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Tajuk Aktiviti:</h3>
-                                <p>${laporan.tajuk || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Penganjur:</h3>
-                                <p>${laporan.penganjur || '-'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    ${laporan.peringkat ? `
-                    <div class="section">
-                        <h3>Peringkat:</h3>
-                        <p>${peringkatMap[laporan.peringkat] || laporan.peringkat}</p>
-                    </div>
-                    ` : ''}
-
-                    <div class="grid">
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Tarikh:</h3>
-                                <p>${laporan.tarikh || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Hari:</h3>
-                                <p>${laporan.hari || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Masa:</h3>
-                                <p>${laporan.masa || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Lokasi:</h3>
-                                <p>${laporan.lokasi || '-'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h3>Bilangan Peserta:</h3>
-                        <p>${laporan.bilanganPeserta || '0'} orang</p>
-                    </div>
-
-                    <div class="signature-section">
-                        <div class="signature-box">
-                            <p style="font-size: 12px; margin-bottom: 5px;">Disediakan oleh:</p>
-                            <div class="signature-line"></div>
-                            <p style="font-size: 12px; margin-top: 5px;">${laporan.pelapor || '_________________'}</p>
-                            <p style="font-size: 10px; color: #666;">Nama & Tandatangan</p>
-                        </div>
-                        <div class="signature-box">
-                            <p style="font-size: 12px; margin-bottom: 5px;">Tarikh:</p>
-                            <div class="signature-line"></div>
-                            <p style="font-size: 12px; margin-top: 5px;">${laporan.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}</p>
-                        </div>
-                    </div>
-
-                    <div class="no-print" style="margin-top: 30px; text-align: center; padding: 20px; background: #f0f0f0; border-radius: 10px;">
-                        <p style="margin-bottom: 15px; font-weight: bold;">Untuk download sebagai PDF:</p>
-                        <p style="margin-bottom: 15px; font-size: 14px;">1. Klik butang "Print/Save as PDF" di bawah</p>
-                        <p style="margin-bottom: 15px; font-size: 14px;">2. Pilih "Save as PDF" atau "Microsoft Print to PDF"</p>
-                        <p style="margin-bottom: 15px; font-size: 14px;">3. Pilih lokasi untuk simpan fail PDF</p>
-                        <p style="margin-bottom: 20px; font-size: 14px;">4. Klik "Save" untuk download</p>
-                        <button onclick="window.print()" style="background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-right: 10px;">📥 Print/Save as PDF</button>
-                        <button onclick="window.close()" style="background: #f44336; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">❌ Tutup</button>
-                    </div>
-
-                    <script>
-                        // Auto-trigger print dialog after page loads
-                        window.onload = function() {
-                            setTimeout(function() {
-                                window.print();
-                            }, 500);
-                        };
-                    </script>
-                <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef3dd59548b91f',t:'MTc1Nzg0NjE2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-                </html>
-            `);
-            
-            printWindow.document.close();
-            showNotification('Tetingkap download PDF telah dibuka! Pilih "Save as PDF" untuk download.', 'success');
+        // Modal functions
+        function closeModal() {
+            document.getElementById('pdfModal').style.display = 'none';
         }
 
-        // Social sharing functions
-        function kongsiWhatsApp() {
-            generateAndSharePDF('whatsapp');
-        }
-
-        function kongsiTelegram() {
-            generateAndSharePDF('telegram');
-        }
-
-        function generateAndSharePDF(platform) {
-            const previewContent = document.getElementById('previewContent');
-            
-            // Create a new window for PDF generation
-            const printWindow = window.open('', '_blank');
-            
-            const laporan = getCurrentReportData();
-            const peringkatMap = {
-                'komuniti': '🏘️ Komuniti',
-                'sekolah': '🏫 Sekolah',
-                'daerah': '🏛️ Daerah',
-                'bahagian': '🏢 Bahagian',
-                'negeri': '🏴 Negeri',
-                'kebangsaan': '🇲🇾 Kebangsaan',
-                'antarabangsa': '🌍 Antarabangsa'
-            };
-
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Laporan Aktiviti - ${laporan.tajuk}</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            margin: 20px; 
-                            line-height: 1.6;
-                            color: #333;
-                        }
-                        .header { 
-                            text-align: center; 
-                            border-bottom: 2px solid #333; 
-                            padding-bottom: 20px; 
-                            margin-bottom: 30px;
-                        }
-                        .header h1 { 
-                            margin: 0; 
-                            font-size: 24px; 
-                            font-weight: bold;
-                        }
-                        .section { 
-                            margin-bottom: 20px; 
-                        }
-                        .section h3 { 
-                            font-weight: bold; 
-                            margin-bottom: 5px; 
-                            color: #333;
-                            font-size: 14px;
-                        }
-                        .section p { 
-                            margin: 0; 
-                            padding-left: 10px;
-                            font-size: 13px;
-                        }
-                        .grid { 
-                            display: flex; 
-                            gap: 20px; 
-                            margin-bottom: 20px;
-                        }
-                        .grid-item { 
-                            flex: 1; 
-                        }
-                        .signature-section { 
-                            border-top: 1px solid #ccc; 
-                            padding-top: 30px; 
-                            margin-top: 40px;
-                            display: flex;
-                            justify-content: space-between;
-                        }
-                        .signature-box {
-                            text-align: center;
-                        }
-                        .signature-line {
-                            border-bottom: 1px solid #333;
-                            width: 200px;
-                            margin: 60px auto 10px auto;
-                        }
-                        @media print {
-                            body { margin: 0; }
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>LAPORAN AKTIVITI</h1>
-                    </div>
-
-                    <div class="grid">
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Tajuk Aktiviti:</h3>
-                                <p>${laporan.tajuk || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Penganjur:</h3>
-                                <p>${laporan.penganjur || '-'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    ${laporan.peringkat ? `
-                    <div class="section">
-                        <h3>Peringkat:</h3>
-                        <p>${peringkatMap[laporan.peringkat] || laporan.peringkat}</p>
-                    </div>
-                    ` : ''}
-
-                    <div class="grid">
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Tarikh:</h3>
-                                <p>${laporan.tarikh || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Hari:</h3>
-                                <p>${laporan.hari || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Masa:</h3>
-                                <p>${laporan.masa || '-'}</p>
-                            </div>
-                        </div>
-                        <div class="grid-item">
-                            <div class="section">
-                                <h3>Lokasi:</h3>
-                                <p>${laporan.lokasi || '-'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h3>Bilangan Peserta:</h3>
-                        <p>${laporan.bilanganPeserta || '0'} orang</p>
-                    </div>
-
-                    <div class="signature-section">
-                        <div class="signature-box">
-                            <p style="font-size: 12px; margin-bottom: 5px;">Disediakan oleh:</p>
-                            <div class="signature-line"></div>
-                            <p style="font-size: 12px; margin-top: 5px;">${laporan.pelapor || '_________________'}</p>
-                            <p style="font-size: 10px; color: #666;">Nama & Tandatangan</p>
-                        </div>
-                        <div class="signature-box">
-                            <p style="font-size: 12px; margin-bottom: 5px;">Tarikh:</p>
-                            <div class="signature-line"></div>
-                            <p style="font-size: 12px; margin-top: 5px;">${laporan.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}</p>
-                        </div>
-                    </div>
-
-                    <div class="no-print" style="margin-top: 30px; text-align: center; padding: 20px; background: #f0f0f0; border-radius: 10px;">
-                        <p style="margin-bottom: 15px; font-weight: bold;">Untuk kongsi ke ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}:</p>
-                        <p style="margin-bottom: 15px; font-size: 14px;">1. Klik "Print" atau tekan Ctrl+P</p>
-                        <p style="margin-bottom: 15px; font-size: 14px;">2. Pilih "Save as PDF" atau "Microsoft Print to PDF"</p>
-                        <p style="margin-bottom: 15px; font-size: 14px;">3. Simpan fail PDF</p>
-                        <p style="margin-bottom: 20px; font-size: 14px;">4. Kongsi fail PDF tersebut ke ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}</p>
-                        <button onclick="window.print()" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-right: 10px;">🖨️ Print/Save as PDF</button>
-                        <button onclick="window.close()" style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">❌ Tutup</button>
-                    </div>
-                </body>
-                </html>
-            `);
-            
-            printWindow.document.close();
-            
-            // Show notification
-            const platformName = platform === 'whatsapp' ? 'WhatsApp' : 'Telegram';
-            showNotification(`Membuka tetingkap untuk jana PDF dan kongsi ke ${platformName}!`, 'success');
-        }
-
-        function getCurrentReportData() {
-            // Try to get data from form first (if in preview mode)
-            const formData = {
-                tajuk: document.getElementById('tajukAktiviti').value,
-                tarikh: document.getElementById('tarikhAktiviti').value,
-                masa: document.getElementById('masaAktiviti').value,
-                hari: document.getElementById('hariAktiviti').value,
-                lokasi: document.getElementById('lokasiAktiviti').value,
-                penganjur: document.getElementById('penganjur').value,
-                peringkat: document.getElementById('peringkat').value,
-                bilanganPeserta: document.getElementById('bilanganPeserta').value,
-                pelapor: document.getElementById('namaPelapor').value,
-                tarikhDibuat: new Date().toLocaleDateString('ms-MY')
-            };
-
-            // If form has data, use it; otherwise extract from preview
-            if (formData.tajuk) {
-                return formData;
-            }
-
-            // Fallback: extract from preview content
-            const previewContent = document.getElementById('previewContent');
-            return extractReportData(previewContent);
-        }
-
-        function extractReportData(previewElement) {
-            // Extract data from the preview content
-            const title = previewElement.querySelector('h1')?.textContent || 'Laporan Aktiviti';
-            const content = previewElement.textContent || '';
-            
-            // Try to extract key information
-            const lines = content.split('\n').filter(line => line.trim());
-            let tajuk = '', tarikh = '', lokasi = '', penganjur = '';
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line.includes('Tajuk Aktiviti:')) {
-                    tajuk = lines[i + 1]?.trim() || '';
-                } else if (line.includes('Tarikh:')) {
-                    tarikh = lines[i + 1]?.trim() || '';
-                } else if (line.includes('Lokasi:')) {
-                    lokasi = lines[i + 1]?.trim() || '';
-                } else if (line.includes('Penganjur:')) {
-                    penganjur = lines[i + 1]?.trim() || '';
-                }
-            }
-            
-            return { title, tajuk, tarikh, lokasi, penganjur };
-        }
-
-        function formatMessageForSharing(laporan) {
-            return `📋 *${laporan.title}*
-
-🎯 *${laporan.tajuk || 'Aktiviti'}*
-
-📅 Tarikh: ${laporan.tarikh || 'Tidak dinyatakan'}
-📍 Lokasi: ${laporan.lokasi || 'Tidak dinyatakan'}  
-👥 Penganjur: ${laporan.penganjur || 'Tidak dinyatakan'}
-
-_Laporan lengkap telah disediakan menggunakan Sistem Laporan Aktiviti_
-
-#LaporanAktiviti #Komuniti #Sekolah`;
-        }
-
-        function downloadLaporan(id) {
-            const laporan = laporanData.find(l => l.id === id);
-            if (laporan) {
-                // Create downloadable text file
-                const content = generateTextReport(laporan);
-                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Laporan_${laporan.tajuk.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showNotification('Laporan berjaya dimuat turun!', 'success');
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('pdfModal');
+            if (event.target === modal) {
+                closeModal();
             }
         }
 
-        function generateTextReport(data) {
-            const peringkatMap = {
-                'komuniti': 'Komuniti',
-                'sekolah': 'Sekolah',
-                'daerah': 'Daerah',
-                'bahagian': 'Bahagian',
-                'negeri': 'Negeri',
-                'kebangsaan': 'Kebangsaan',
-                'antarabangsa': 'Antarabangsa'
-            };
-
-            return `
-LAPORAN AKTIVITI
-=====================================
-
-Tajuk Aktiviti: ${data.tajuk || '-'}
-Penganjur: ${data.penganjur || '-'}
-${data.peringkat ? `Peringkat: ${peringkatMap[data.peringkat] || data.peringkat}` : ''}
-Tarikh: ${data.tarikh || '-'}
-Hari: ${data.hari || '-'}
-Masa: ${data.masa || '-'}
-Lokasi: ${data.lokasi || '-'}
-
-BILANGAN PESERTA:
-${data.bilanganPeserta || '0'} orang
-
-Disediakan oleh: ${data.pelapor || '-'}
-Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
-            `.trim();
-        }
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                info: 'bg-blue-500'
-            };
-
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
-            notification.textContent = message;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.classList.remove('translate-x-full');
-            }, 100);
-
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
-        }
-
-        // Image upload functionality
-        let uploadedImages = [];
-
-        function handleImageUpload(event) {
-            const files = Array.from(event.target.files);
-            const previewContainer = document.getElementById('previewImages');
+        // Auto-fill current date and time
+        function setCurrentDateTime() {
+            const now = new Date();
             
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        uploadedImages.push(e.target.result);
-                        displayImagePreviews();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        function displayImagePreviews() {
-            const previewContainer = document.getElementById('previewImages');
+            // Set current date
+            const today = now.toISOString().split('T')[0];
+            document.getElementById('tarikh').value = today;
             
-            if (uploadedImages.length > 0) {
-                previewContainer.classList.remove('hidden');
-                previewContainer.innerHTML = uploadedImages.map((img, index) => `
-                    <div class="relative border rounded-lg overflow-hidden">
-                        <img src="${img}" alt="Preview ${index + 1}" class="w-full h-24 object-cover">
-                        <button onclick="removeImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                            ×
-                        </button>
-                    </div>
-                `).join('');
-            } else {
-                previewContainer.classList.add('hidden');
-            }
-        }
-
-        function removeImage(index) {
-            uploadedImages.splice(index, 1);
-            displayImagePreviews();
+            // Set current time
+            const currentTime = now.toTimeString().slice(0, 5);
+            document.getElementById('masa').value = currentTime;
+            
+            // Set current day
+            const days = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+            const currentDay = days[now.getDay()];
+            document.getElementById('hari').value = currentDay;
         }
 
         // Initialize
-        paparkanSenaraiLaporan();
-        autoFillDateTime();
+        displayReports();
+        setCurrentDateTime();
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef669e05e34748',t:'MTc1Nzg0NzgzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
