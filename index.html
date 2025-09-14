@@ -490,18 +490,17 @@
                     </div>
 
                     <div class="form-group image-upload">
-                        <label>Gambar Aktiviti</label>
+                        <label>Gambar Aktiviti (Maksimum 5 gambar)</label>
                         <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
                             <div>
                                 <p style="font-size: 3rem; margin-bottom: 10px;">📷</p>
                                 <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 5px;">Klik untuk pilih gambar</p>
-                                <p style="color: #6c757d;">atau seret dan lepas gambar di sini</p>
+                                <p style="color: #6c757d;">atau seret dan lepas gambar di sini (maksimum 5 gambar)</p>
                             </div>
                         </div>
-                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                        <div class="image-preview" id="imagePreview">
-                            <img id="previewImg" alt="Preview">
-                            <p style="margin-top: 10px; color: #6c757d;">Gambar dipilih</p>
+                        <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                        <div class="images-preview" id="imagesPreview" style="display: none; margin-top: 20px;">
+                            <div id="imagesList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;"></div>
                         </div>
                     </div>
                 </div>
@@ -554,8 +553,9 @@
         // Image upload handling
         const imageInput = document.getElementById('imageInput');
         const imageUploadArea = document.querySelector('.image-upload-area');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
+        const imagesPreview = document.getElementById('imagesPreview');
+        const imagesList = document.getElementById('imagesList');
+        let selectedImages = [];
 
         imageInput.addEventListener('change', handleImageSelect);
 
@@ -571,23 +571,95 @@
         imageUploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             imageUploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                imageInput.files = files;
-                handleImageSelect();
-            }
+            const files = Array.from(e.dataTransfer.files);
+            handleMultipleImages(files);
         });
 
         function handleImageSelect() {
-            const file = imageInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImg.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+            const files = Array.from(imageInput.files);
+            handleMultipleImages(files);
+        }
+
+        function handleMultipleImages(files) {
+            // Limit to 5 images
+            const remainingSlots = 5 - selectedImages.length;
+            const filesToProcess = files.slice(0, remainingSlots);
+            
+            if (files.length > remainingSlots) {
+                alert(`Hanya ${remainingSlots} gambar lagi boleh ditambah. Maksimum 5 gambar.`);
             }
+
+            filesToProcess.forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        // Compress image
+                        compressImage(e.target.result, (compressedImage) => {
+                            const imageId = Date.now() + index;
+                            selectedImages.push({
+                                id: imageId,
+                                data: compressedImage,
+                                name: file.name
+                            });
+                            displayImages();
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function compressImage(src, callback) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate new dimensions (max 800px width/height)
+                let { width, height } = img;
+                const maxSize = 800;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+                callback(compressedData);
+            };
+            img.src = src;
+        }
+
+        function displayImages() {
+            if (selectedImages.length === 0) {
+                imagesPreview.style.display = 'none';
+                return;
+            }
+
+            imagesPreview.style.display = 'block';
+            imagesList.innerHTML = selectedImages.map(image => `
+                <div style="position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <img src="${image.data}" alt="${image.name}" style="width: 100%; height: 120px; object-fit: cover;">
+                    <button type="button" onclick="removeImage(${image.id})" style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeImage(imageId) {
+            selectedImages = selectedImages.filter(img => img.id !== imageId);
+            displayImages();
         }
 
         // Form submission
@@ -606,7 +678,7 @@
                 peringkat: document.getElementById('peringkat').value,
                 jumlahPeserta: document.getElementById('jumlahPeserta').value,
                 namaPelapor: document.getElementById('namaPelapor').value,
-                gambar: previewImg.src || null,
+                gambar: selectedImages.map(img => img.data),
                 tarikhDibuat: new Date().toLocaleDateString('ms-MY')
             };
 
@@ -616,7 +688,8 @@
 
             // Reset form
             this.reset();
-            imagePreview.style.display = 'none';
+            selectedImages = [];
+            imagesPreview.style.display = 'none';
 
             // Show modal
             document.getElementById('pdfModal').style.display = 'block';
@@ -693,128 +766,120 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Set colors
-            const primaryColor = [79, 172, 254];
-            const secondaryColor = [102, 126, 234];
-            const textColor = [51, 51, 51];
+            // Modern minimalist colors
+            const primaryColor = [99, 102, 241]; // Indigo
+            const lightGray = [248, 250, 252];
+            const darkGray = [51, 65, 85];
 
-            // Header with gradient effect
+            // Clean header
             doc.setFillColor(...primaryColor);
-            doc.rect(0, 0, 210, 40, 'F');
-            
-            doc.setFillColor(...secondaryColor);
-            doc.rect(0, 0, 210, 25, 'F');
+            doc.rect(0, 0, 210, 35, 'F');
 
             // Title
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24);
+            doc.setFontSize(20);
             doc.setFont(undefined, 'bold');
-            doc.text('LAPORAN AKTIVITI', 105, 15, { align: 'center' });
+            doc.text('LAPORAN AKTIVITI', 105, 20, { align: 'center' });
             
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'normal');
-            doc.text('Sekolah & Komuniti Kampung', 105, 22, { align: 'center' });
-
-            // Reset text color
-            doc.setTextColor(...textColor);
-
-            let yPos = 55;
-
-            // Program name - highlighted
-            doc.setFillColor(248, 249, 250);
-            doc.rect(15, yPos - 5, 180, 15, 'F');
-            doc.setFontSize(18);
-            doc.setFont(undefined, 'bold');
-            doc.text(report.namaProgram, 20, yPos + 5);
-
-            yPos += 25;
-
-            // Details in two columns
-            const leftCol = 20;
-            const rightCol = 110;
-            doc.setFontSize(11);
-
-            // Left column
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...primaryColor);
-            doc.text('TARIKH & MASA', leftCol, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...textColor);
-            doc.text(`${report.hari}, ${report.tarikh}`, leftCol, yPos + 7);
-            doc.text(`Masa: ${report.masa}`, leftCol, yPos + 14);
-
-            // Right column
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...primaryColor);
-            doc.text('TEMPAT', rightCol, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...textColor);
-            doc.text(report.tempat, rightCol, yPos + 7);
-
-            yPos += 30;
-
-            // Second row
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...primaryColor);
-            doc.text('PENGANJUR', leftCol, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...textColor);
-            doc.text(report.penganjur, leftCol, yPos + 7);
-
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...primaryColor);
-            doc.text('PERINGKAT', rightCol, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...textColor);
-            doc.text(report.peringkat, rightCol, yPos + 7);
-
-            yPos += 25;
-
-            // Third row
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...primaryColor);
-            doc.text('JUMLAH PESERTA', leftCol, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...textColor);
-            doc.text(`${report.jumlahPeserta} orang`, leftCol, yPos + 7);
-
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(...primaryColor);
-            doc.text('PELAPOR', rightCol, yPos);
-            doc.setFont(undefined, 'normal');
-            doc.setTextColor(...textColor);
-            doc.text(report.namaPelapor, rightCol, yPos + 7);
-
-            yPos += 30;
-
-            // Image section
-            if (report.gambar) {
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(...primaryColor);
-                doc.text('GAMBAR AKTIVITI', leftCol, yPos);
-                yPos += 10;
-                
-                try {
-                    doc.addImage(report.gambar, 'JPEG', leftCol, yPos, 80, 60);
-                    yPos += 70;
-                } catch (e) {
-                    doc.setFont(undefined, 'normal');
-                    doc.setTextColor(150, 150, 150);
-                    doc.text('Gambar tidak dapat dipaparkan', leftCol, yPos + 10);
-                    yPos += 20;
-                }
-            }
-
-            // Footer
-            yPos = 270;
-            doc.setFillColor(...primaryColor);
-            doc.rect(0, yPos, 210, 27, 'F');
-            
-            doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
             doc.setFont(undefined, 'normal');
-            doc.text(`Laporan dijana pada: ${new Date().toLocaleDateString('ms-MY')}`, 105, yPos + 10, { align: 'center' });
-            doc.text('Sistem Laporan Aktiviti - Sekolah & Komuniti', 105, yPos + 17, { align: 'center' });
+            doc.text('Sekolah & Komuniti Kampung', 105, 28, { align: 'center' });
+
+            let yPos = 50;
+
+            // Program name
+            doc.setTextColor(...darkGray);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text(report.namaProgram, 20, yPos);
+            
+            // Underline
+            doc.setDrawColor(...primaryColor);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPos + 2, 190, yPos + 2);
+
+            yPos += 20;
+
+            // Details in clean format
+            doc.setFontSize(10);
+            const details = [
+                [`Tarikh & Masa`, `${report.hari}, ${report.tarikh} - ${report.masa}`],
+                [`Tempat`, report.tempat],
+                [`Penganjur`, report.penganjur],
+                [`Peringkat`, report.peringkat],
+                [`Jumlah Peserta`, `${report.jumlahPeserta} orang`],
+                [`Pelapor`, report.namaPelapor]
+            ];
+
+            details.forEach(([label, value]) => {
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(...primaryColor);
+                doc.text(label + ':', 20, yPos);
+                
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(...darkGray);
+                doc.text(value, 60, yPos);
+                
+                yPos += 12;
+            });
+
+            // Images section - optimized and smaller
+            if (report.gambar && report.gambar.length > 0) {
+                yPos += 10;
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(...primaryColor);
+                doc.text('Gambar Aktiviti:', 20, yPos);
+                yPos += 10;
+                
+                // Display up to 3 images in a row, smaller size
+                const imagesPerRow = 3;
+                const imageWidth = 50;
+                const imageHeight = 35;
+                const imageSpacing = 10;
+                
+                report.gambar.slice(0, 6).forEach((image, index) => {
+                    const row = Math.floor(index / imagesPerRow);
+                    const col = index % imagesPerRow;
+                    const x = 20 + col * (imageWidth + imageSpacing);
+                    const y = yPos + row * (imageHeight + 5);
+                    
+                    try {
+                        // Further compress image for PDF
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        
+                        img.onload = function() {
+                            canvas.width = 200; // Very small for PDF
+                            canvas.height = 150;
+                            ctx.drawImage(img, 0, 0, 200, 150);
+                            const compressedForPDF = canvas.toDataURL('image/jpeg', 0.3); // Very low quality for PDF
+                            
+                            try {
+                                doc.addImage(compressedForPDF, 'JPEG', x, y, imageWidth, imageHeight);
+                            } catch (e) {
+                                console.log('Error adding image to PDF:', e);
+                            }
+                        };
+                        img.src = image;
+                    } catch (e) {
+                        console.log('Error processing image:', e);
+                    }
+                });
+                
+                yPos += Math.ceil(report.gambar.length / imagesPerRow) * (imageHeight + 5) + 10;
+            }
+
+            // Clean footer
+            const footerY = 280;
+            doc.setFillColor(...lightGray);
+            doc.rect(0, footerY, 210, 17, 'F');
+            
+            doc.setTextColor(...darkGray);
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Dijana pada: ${new Date().toLocaleDateString('ms-MY')}`, 105, footerY + 8, { align: 'center' });
+            doc.text('Sistem Laporan Aktiviti', 105, footerY + 13, { align: 'center' });
 
             // Save PDF
             doc.save(`Laporan_${report.namaProgram.replace(/\s+/g, '_')}_${report.tarikh}.pdf`);
@@ -864,5 +929,5 @@
         displayReports();
         setCurrentDateTime();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef669e05e34748',t:'MTc1Nzg0NzgzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef726da4a8ad7a',t:'MTc1Nzg0ODMyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
