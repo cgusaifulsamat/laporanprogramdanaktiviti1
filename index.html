@@ -12,44 +12,59 @@
         .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .btn-primary:hover { background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body { font-size: 16px; }
+            .mobile-text { font-size: 16px !important; }
+            .mobile-title { font-size: 18px !important; }
+            .mobile-header { font-size: 24px !important; }
+            .mobile-button { font-size: 16px !important; padding: 12px 16px !important; }
+            .mobile-input { font-size: 16px !important; padding: 12px !important; }
+            .mobile-select { font-size: 16px !important; padding: 12px !important; }
+            .mobile-textarea { font-size: 16px !important; padding: 12px !important; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
     <div class="gradient-bg text-white p-6 shadow-lg">
         <div class="max-w-4xl mx-auto">
-            <h1 class="text-2xl font-bold mb-2">📋 Laporan Aktiviti</h1>
-            <p class="text-blue-100">Sistem mudah untuk laporan sekolah & komuniti</p>
+            <h1 class="text-2xl md:text-2xl font-bold mb-2 mobile-header">📋 Laporan Aktiviti</h1>
+            <p class="text-blue-100 mobile-text">Sistem mudah untuk laporan sekolah & komuniti</p>
         </div>
     </div>
 
     <!-- Main Container -->
-    <div class="max-w-4xl mx-auto p-6">
+    <div class="max-w-4xl mx-auto p-3 md:p-6">
         <!-- Navigation Tabs -->
         <div class="bg-white rounded-lg card-shadow mb-6 p-1">
             <div class="flex space-x-1">
-                <button onclick="showTab('buat')" id="tab-buat" class="flex-1 py-3 px-4 rounded-md font-medium transition-all btn-primary text-white">
-                    ✏️ Buat Laporan
+                <button onclick="showTab('buat')" id="tab-buat" class="flex-1 py-3 px-2 md:px-4 rounded-md font-medium transition-all btn-primary text-white mobile-button">
+                    <span class="hidden sm:inline">✏️ Buat Laporan</span>
+                    <span class="sm:hidden">✏️ Buat</span>
                 </button>
-                <button onclick="showTab('senarai')" id="tab-senarai" class="flex-1 py-3 px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100">
-                    📄 Senarai Laporan
+                <button onclick="showTab('senarai')" id="tab-senarai" class="flex-1 py-3 px-2 md:px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100 mobile-button">
+                    <span class="hidden sm:inline">📄 Senarai Laporan</span>
+                    <span class="sm:hidden">📄 Senarai</span>
                 </button>
-                <button onclick="showTab('template')" id="tab-template" class="flex-1 py-3 px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100">
-                    📝 Template
+                <button onclick="showTab('template')" id="tab-template" class="flex-1 py-3 px-2 md:px-4 rounded-md font-medium transition-all text-gray-600 hover:bg-gray-100 mobile-button">
+                    <span class="hidden sm:inline">📝 Template</span>
+                    <span class="sm:hidden">📝 Template</span>
                 </button>
             </div>
         </div>
 
         <!-- Buat Laporan Tab -->
         <div id="content-buat" class="tab-content">
-            <div class="bg-white rounded-lg card-shadow p-6">
-                <h2 class="text-xl font-semibold mb-6 text-gray-800">Buat Laporan Baru</h2>
+            <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
+                <h2 class="text-xl font-semibold mb-6 text-gray-800 mobile-title">Buat Laporan Baru</h2>
                 
                 <form id="laporanForm" class="space-y-6">
                     <!-- Jenis Laporan -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Laporan</label>
-                        <select id="jenisLaporan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm md:text-sm font-medium text-gray-700 mb-2 mobile-text">Jenis Laporan</label>
+                        <select id="jenisLaporan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-select">
                             <option value="">Pilih jenis laporan...</option>
                             <option value="sekolah">🏫 Aktiviti Sekolah</option>
                             <option value="komuniti">🏘️ Aktiviti Komuniti</option>
@@ -60,86 +75,86 @@
 
                     <!-- Tajuk Aktiviti -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tajuk Aktiviti</label>
-                        <input type="text" id="tajukAktiviti" placeholder="Contoh: Hari Sukan Sekolah 2024" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Tajuk Aktiviti</label>
+                        <input type="text" id="tajukAktiviti" placeholder="Contoh: Hari Sukan Sekolah 2024" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                     </div>
 
                     <!-- Tarikh & Masa -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tarikh</label>
-                            <input type="date" id="tarikhAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Tarikh</label>
+                            <input type="date" id="tarikhAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Masa</label>
-                            <input type="time" id="masaAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Masa</label>
+                            <input type="time" id="masaAktiviti" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                         </div>
                     </div>
 
                     <!-- Lokasi -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi</label>
-                        <input type="text" id="lokasiAktiviti" placeholder="Contoh: Dewan Sekolah / Balai Raya Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Lokasi</label>
+                        <input type="text" id="lokasiAktiviti" placeholder="Contoh: Dewan Sekolah / Balai Raya Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                     </div>
 
                     <!-- Penganjur -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Penganjur</label>
-                        <input type="text" id="penganjur" placeholder="Contoh: PIBG Sekolah / JKKK Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Penganjur</label>
+                        <input type="text" id="penganjur" placeholder="Contoh: PIBG Sekolah / JKKK Kampung" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                     </div>
 
                     <!-- Objektif -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Objektif Aktiviti</label>
-                        <textarea id="objektifAktiviti" rows="3" placeholder="Nyatakan objektif atau tujuan aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Objektif Aktiviti</label>
+                        <textarea id="objektifAktiviti" rows="3" placeholder="Nyatakan objektif atau tujuan aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
                     </div>
 
                     <!-- Penerangan Aktiviti -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Penerangan Aktiviti</label>
-                        <textarea id="peneranganAktiviti" rows="4" placeholder="Terangkan aktiviti yang dijalankan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Penerangan Aktiviti</label>
+                        <textarea id="peneranganAktiviti" rows="4" placeholder="Terangkan aktiviti yang dijalankan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
                     </div>
 
                     <!-- Bilangan Peserta -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Bilangan Peserta</label>
-                            <input type="number" id="bilanganPeserta" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Bilangan Peserta</label>
+                            <input type="number" id="bilanganPeserta" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Lelaki</label>
-                            <input type="number" id="bilanganLelaki" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Lelaki</label>
+                            <input type="number" id="bilanganLelaki" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Perempuan</label>
-                            <input type="number" id="bilanganPerempuan" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Perempuan</label>
+                            <input type="number" id="bilanganPerempuan" placeholder="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                         </div>
                     </div>
 
                     <!-- Hasil & Pencapaian -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Hasil & Pencapaian</label>
-                        <textarea id="hasilPencapaian" rows="3" placeholder="Nyatakan hasil dan pencapaian aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Hasil & Pencapaian</label>
+                        <textarea id="hasilPencapaian" rows="3" placeholder="Nyatakan hasil dan pencapaian aktiviti..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
                     </div>
 
                     <!-- Masalah & Cadangan -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Masalah & Cadangan Penambahbaikan</label>
-                        <textarea id="masalahCadangan" rows="3" placeholder="Nyatakan masalah yang dihadapi dan cadangan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Masalah & Cadangan Penambahbaikan</label>
+                        <textarea id="masalahCadangan" rows="3" placeholder="Nyatakan masalah yang dihadapi dan cadangan..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-textarea"></textarea>
                     </div>
 
                     <!-- Nama Pelapor -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pelapor</label>
-                        <input type="text" id="namaPelapor" placeholder="Nama lengkap pelapor" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 mobile-text">Nama Pelapor</label>
+                        <input type="text" id="namaPelapor" placeholder="Nama lengkap pelapor" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mobile-input">
                     </div>
 
                     <!-- Buttons -->
-                    <div class="flex space-x-4 pt-4">
-                        <button type="submit" class="flex-1 btn-primary text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
+                        <button type="submit" class="flex-1 btn-primary text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all mobile-button">
                             💾 Simpan Laporan
                         </button>
-                        <button type="button" onclick="previewLaporan()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-all">
+                        <button type="button" onclick="previewLaporan()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-all mobile-button">
                             👁️ Preview
                         </button>
                     </div>
@@ -149,11 +164,11 @@
 
         <!-- Senarai Laporan Tab -->
         <div id="content-senarai" class="tab-content hidden">
-            <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-semibold text-gray-800">Senarai Laporan</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mobile-title">Senarai Laporan</h2>
                     <div class="flex space-x-2">
-                        <select id="filterJenis" onchange="filterLaporan()" class="p-2 border border-gray-300 rounded-lg text-sm">
+                        <select id="filterJenis" onchange="filterLaporan()" class="p-2 border border-gray-300 rounded-lg text-sm mobile-select">
                             <option value="">Semua Jenis</option>
                             <option value="sekolah">Sekolah</option>
                             <option value="komuniti">Komuniti</option>
@@ -175,8 +190,8 @@
 
         <!-- Template Tab -->
         <div id="content-template" class="tab-content hidden">
-            <div class="bg-white rounded-lg card-shadow p-6">
-                <h2 class="text-xl font-semibold mb-6 text-gray-800">Template Laporan</h2>
+            <div class="bg-white rounded-lg card-shadow p-4 md:p-6">
+                <h2 class="text-xl font-semibold mb-6 text-gray-800 mobile-title">Template Laporan</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all cursor-pointer" onclick="gunaTemplate('sekolah')">
@@ -217,16 +232,16 @@
             <div id="previewContent" class="p-6"></div>
             <div class="p-6 border-t border-gray-200">
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                    <button onclick="downloadPDF()" class="btn-primary text-white py-2 px-4 rounded-lg font-medium">
+                    <button onclick="downloadPDF()" class="btn-primary text-white py-2 px-4 rounded-lg font-medium mobile-button">
                         📥 Download PDF
                     </button>
-                    <button onclick="kongsiWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium">
+                    <button onclick="kongsiWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium mobile-button">
                         📱 Kongsi ke WhatsApp
                     </button>
-                    <button onclick="kongsiTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium">
+                    <button onclick="kongsiTelegram()" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium mobile-button">
                         ✈️ Kongsi ke Telegram
                     </button>
-                    <button onclick="tutupPreview()" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg font-medium">
+                    <button onclick="tutupPreview()" class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg font-medium mobile-button">
                         Tutup
                     </button>
                 </div>
@@ -965,5 +980,5 @@ Tarikh: ${data.tarikhDibuat || new Date().toLocaleDateString('ms-MY')}
         // Initialize
         paparkanSenaraiLaporan();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ee45dcb3de8177',t:'MTc1NzgzNjAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ee6ed345519fe5',t:'MTc1NzgzNzY4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
