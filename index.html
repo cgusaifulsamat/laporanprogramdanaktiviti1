@@ -759,130 +759,153 @@
             closeModal();
         }
 
-        function generatePDF(reportId) {
+        async function generatePDF(reportId) {
             const report = reports.find(r => r.id === reportId);
             if (!report) return;
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Modern minimalist colors
-            const primaryColor = [99, 102, 241]; // Indigo
-            const lightGray = [248, 250, 252];
-            const darkGray = [51, 65, 85];
+            // Modern elegant colors
+            const primaryColor = [34, 197, 94]; // Emerald green
+            const accentColor = [16, 185, 129]; // Teal
+            const textColor = [30, 41, 59]; // Slate 800
+            const lightBg = [248, 250, 252]; // Slate 50
+            const grayText = [100, 116, 139]; // Slate 500
 
-            // Clean header
-            doc.setFillColor(...primaryColor);
-            doc.rect(0, 0, 210, 35, 'F');
+            // Elegant gradient header
+            doc.setFillColor(34, 197, 94);
+            doc.rect(0, 0, 210, 45, 'F');
+            
+            doc.setFillColor(16, 185, 129);
+            doc.rect(0, 0, 210, 30, 'F');
 
-            // Title
+            // Modern title
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
+            doc.setFontSize(24);
             doc.setFont(undefined, 'bold');
-            doc.text('LAPORAN AKTIVITI', 105, 20, { align: 'center' });
+            doc.text('LAPORAN AKTIVITI', 105, 18, { align: 'center' });
             
-            doc.setFontSize(10);
+            doc.setFontSize(11);
             doc.setFont(undefined, 'normal');
-            doc.text('Sekolah & Komuniti Kampung', 105, 28, { align: 'center' });
+            doc.text('Sistem Pengurusan Sekolah & Komuniti', 105, 26, { align: 'center' });
 
-            let yPos = 50;
+            let yPos = 60;
 
-            // Program name
-            doc.setTextColor(...darkGray);
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text(report.namaProgram, 20, yPos);
+            // Program name with modern styling
+            doc.setFillColor(...lightBg);
+            doc.roundedRect(15, yPos - 8, 180, 20, 3, 3, 'F');
             
-            // Underline
-            doc.setDrawColor(...primaryColor);
+            doc.setTextColor(...textColor);
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text(report.namaProgram, 20, yPos + 2);
+
+            yPos += 30;
+
+            // Modern card-style details
+            doc.setFillColor(255, 255, 255);
+            doc.setDrawColor(226, 232, 240);
             doc.setLineWidth(0.5);
-            doc.line(20, yPos + 2, 190, yPos + 2);
+            doc.roundedRect(15, yPos - 5, 180, 85, 5, 5, 'FD');
 
-            yPos += 20;
+            yPos += 5;
 
-            // Details in clean format
-            doc.setFontSize(10);
+            // Details with better spacing and typography
+            doc.setFontSize(11);
             const details = [
-                [`Tarikh & Masa`, `${report.hari}, ${report.tarikh} - ${report.masa}`],
-                [`Tempat`, report.tempat],
-                [`Penganjur`, report.penganjur],
-                [`Peringkat`, report.peringkat],
-                [`Jumlah Peserta`, `${report.jumlahPeserta} orang`],
-                [`Pelapor`, report.namaPelapor]
+                [`📅 Tarikh & Masa`, `${report.hari}, ${report.tarikh} pada ${report.masa}`],
+                [`📍 Tempat`, report.tempat],
+                [`🏢 Penganjur`, report.penganjur],
+                [`🎯 Peringkat`, report.peringkat],
+                [`👥 Jumlah Peserta`, `${report.jumlahPeserta} orang`],
+                [`✍️ Pelapor`, report.namaPelapor]
             ];
 
-            details.forEach(([label, value]) => {
+            details.forEach(([label, value], index) => {
+                const isEven = index % 2 === 0;
+                const xPos = isEven ? 20 : 110;
+                const currentY = yPos + Math.floor(index / 2) * 22;
+                
                 doc.setFont(undefined, 'bold');
-                doc.setTextColor(...primaryColor);
-                doc.text(label + ':', 20, yPos);
+                doc.setTextColor(...accentColor);
+                doc.text(label, xPos, currentY);
                 
                 doc.setFont(undefined, 'normal');
-                doc.setTextColor(...darkGray);
-                doc.text(value, 60, yPos);
-                
-                yPos += 12;
+                doc.setTextColor(...textColor);
+                const wrappedText = doc.splitTextToSize(value, 85);
+                doc.text(wrappedText, xPos, currentY + 8);
             });
 
-            // Images section - optimized and smaller
+            yPos += 85;
+
+            // Images section with proper async handling
             if (report.gambar && report.gambar.length > 0) {
-                yPos += 10;
+                yPos += 15;
+                
+                // Images header
+                doc.setFillColor(...lightBg);
+                doc.roundedRect(15, yPos - 5, 180, 15, 3, 3, 'F');
+                
                 doc.setFont(undefined, 'bold');
-                doc.setTextColor(...primaryColor);
-                doc.text('Gambar Aktiviti:', 20, yPos);
-                yPos += 10;
+                doc.setTextColor(...accentColor);
+                doc.text('📸 Gambar Aktiviti', 20, yPos + 5);
                 
-                // Display up to 3 images in a row, smaller size
+                yPos += 20;
+                
+                // Process images synchronously
+                const imageWidth = 55;
+                const imageHeight = 40;
                 const imagesPerRow = 3;
-                const imageWidth = 50;
-                const imageHeight = 35;
-                const imageSpacing = 10;
+                const imageSpacing = 8;
                 
-                report.gambar.slice(0, 6).forEach((image, index) => {
-                    const row = Math.floor(index / imagesPerRow);
-                    const col = index % imagesPerRow;
+                for (let i = 0; i < Math.min(report.gambar.length, 6); i++) {
+                    const row = Math.floor(i / imagesPerRow);
+                    const col = i % imagesPerRow;
                     const x = 20 + col * (imageWidth + imageSpacing);
-                    const y = yPos + row * (imageHeight + 5);
+                    const y = yPos + row * (imageHeight + 10);
                     
                     try {
-                        // Further compress image for PDF
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const img = new Image();
+                        // Add image with border
+                        doc.setDrawColor(226, 232, 240);
+                        doc.setLineWidth(1);
+                        doc.roundedRect(x - 1, y - 1, imageWidth + 2, imageHeight + 2, 2, 2, 'D');
                         
-                        img.onload = function() {
-                            canvas.width = 200; // Very small for PDF
-                            canvas.height = 150;
-                            ctx.drawImage(img, 0, 0, 200, 150);
-                            const compressedForPDF = canvas.toDataURL('image/jpeg', 0.3); // Very low quality for PDF
-                            
-                            try {
-                                doc.addImage(compressedForPDF, 'JPEG', x, y, imageWidth, imageHeight);
-                            } catch (e) {
-                                console.log('Error adding image to PDF:', e);
-                            }
-                        };
-                        img.src = image;
+                        doc.addImage(report.gambar[i], 'JPEG', x, y, imageWidth, imageHeight);
                     } catch (e) {
-                        console.log('Error processing image:', e);
+                        // Fallback for failed images
+                        doc.setFillColor(248, 250, 252);
+                        doc.roundedRect(x, y, imageWidth, imageHeight, 2, 2, 'F');
+                        
+                        doc.setTextColor(...grayText);
+                        doc.setFontSize(8);
+                        doc.text('Gambar tidak', x + imageWidth/2, y + imageHeight/2 - 2, { align: 'center' });
+                        doc.text('dapat dipapar', x + imageWidth/2, y + imageHeight/2 + 4, { align: 'center' });
                     }
-                });
+                }
                 
-                yPos += Math.ceil(report.gambar.length / imagesPerRow) * (imageHeight + 5) + 10;
+                yPos += Math.ceil(Math.min(report.gambar.length, 6) / imagesPerRow) * (imageHeight + 10) + 10;
             }
 
-            // Clean footer
-            const footerY = 280;
-            doc.setFillColor(...lightGray);
-            doc.rect(0, footerY, 210, 17, 'F');
+            // Modern footer
+            const footerY = 275;
+            doc.setFillColor(...lightBg);
+            doc.rect(0, footerY, 210, 22, 'F');
             
-            doc.setTextColor(...darkGray);
-            doc.setFontSize(8);
+            // Footer line
+            doc.setDrawColor(...accentColor);
+            doc.setLineWidth(1);
+            doc.line(20, footerY + 2, 190, footerY + 2);
+            
+            doc.setTextColor(...grayText);
+            doc.setFontSize(9);
             doc.setFont(undefined, 'normal');
-            doc.text(`Dijana pada: ${new Date().toLocaleDateString('ms-MY')}`, 105, footerY + 8, { align: 'center' });
-            doc.text('Sistem Laporan Aktiviti', 105, footerY + 13, { align: 'center' });
+            doc.text(`Laporan dijana pada ${new Date().toLocaleDateString('ms-MY')} | ${new Date().toLocaleTimeString('ms-MY')}`, 105, footerY + 10, { align: 'center' });
+            doc.text('Sistem Laporan Aktiviti - Sekolah & Komuniti Kampung', 105, footerY + 17, { align: 'center' });
 
-            // Save PDF
-            doc.save(`Laporan_${report.namaProgram.replace(/\s+/g, '_')}_${report.tarikh}.pdf`);
+            // Save PDF with better filename
+            const cleanName = report.namaProgram.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
+            doc.save(`Laporan_${cleanName}_${report.tarikh}.pdf`);
         }
 
         // Delete report
@@ -929,5 +952,5 @@
         displayReports();
         setCurrentDateTime();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef726da4a8ad7a',t:'MTc1Nzg0ODMyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ef865e533f46c4',t:'MTc1Nzg0OTEzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
